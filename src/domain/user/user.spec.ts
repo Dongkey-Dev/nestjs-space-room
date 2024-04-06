@@ -42,46 +42,17 @@ export class User
     this.id = new T_UUID();
     this.email = email;
   }
-
-  createSpace(): Promise<ISpace> {
-    const space = this.spaceManager.createDomain();
-    space.setOwner(this);
-    return this.spaceManager
-      .applyDomain(space)
-      .then(() => {
-        return space;
-      })
-      .catch((e) => {
-        throw e;
-      });
-  }
-  getProfile(requester?: T_UUID): z.infer<typeof profileSchema> {
-    if (requester && requester === this.id) {
-      return this.exportJson();
-    }
-    return this.exportJsonWithOmitSchema({ email: true });
-  }
-
   getId(): T_UUID {
     return this.id;
   }
-
-  setProfile(profile: z.infer<typeof updateProfileSchema>) {
-    this.importPartial(profile);
+  getProfile(requester?: T_UUID): z.output<typeof profileSchema> {
+    if (requester && requester === this.id) return this.exportJson();
+    else return this.exportJsonWithOmitSchema({ email: true });
   }
-  getJoiningSpaces(): Promise<ISpace[]> {
-    return this.spaceManager
-      .getDomainList(this.id)
-      .then((spaces) => {
-        return spaces;
-      })
-      .catch((e) => {
-        throw e;
-      });
-  }
-
-  setSpaceManager(spaceManager: DomainManager<ISpace>) {
-    this.spaceManager = spaceManager;
+  setProfile(profile: Partial<z.infer<typeof userSchema>>): boolean {
+    const setResult = this.importPartial(profile);
+    if (!setResult) throw new Error('Profile set failed');
+    return setResult;
   }
 }
 
@@ -113,9 +84,29 @@ describe('User', () => {
   });
 
   it('프로필 조회시, 본인인 경우 모든 프로필을 반환', () => {
-    const beforeProfile = user.getProfile(user.getId());
-    expect(beforeProfile).toEqual({
+    user.setProfile({
+      lastName: 'Doe',
+      firstName: 'John',
+      profileImage: 'https://example.com',
+    });
+    expect(user.getProfile(user.getId())).toEqual({
       email: userEmail,
+      lastName: 'Doe',
+      firstName: 'John',
+      profileImage: 'https://example.com',
+    });
+  });
+
+  it('본인이 아닌경우, 이메일을 제외한 프로필을 반환', () => {
+    user.setProfile({
+      lastName: 'Doe',
+      firstName: 'John',
+      profileImage: 'https://example.com',
+    });
+    expect(user.getProfile(new T_UUID())).toEqual({
+      lastName: 'Doe',
+      firstName: 'John',
+      profileImage: 'https://example.com',
     });
   });
 });
