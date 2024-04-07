@@ -116,23 +116,26 @@ export interface ISpaceRole {
 export interface IPost {
   getId(): T_UUID;
   getType(): 'notice' | 'question';
-  changeTypeNotice(
-    spaceMember: ISpaceMember,
-    spaceRole: ISpaceRole,
-    requester: T_UUID,
-  ): boolean;
+  changeTypeNotice(spaceMember: ISpaceMemberID): boolean;
   getTitle(): string;
   getContent(): string;
-  getAuthorId(): T_UUID;
-  getAuthorProfile(requester: ISpaceMemberID): z.infer<typeof profileSchema>;
   getCreatedAt(): Date;
   getUpdatedAt(): Date;
 
+  setAuthor(author: IUser): boolean;
+  getAuthorId(): T_UUID;
+  getAuthorProfile(requester: ISpaceMemberID): z.infer<typeof profileSchema>;
+
+  getTotalComments(): number;
+  setTotalComments(totalComments: number): boolean;
+  getTotalParticipants(): number;
+  setTotalParticipants(totalParticipants: number): boolean;
   setRanking(ranking: number): boolean;
+  getRanking(): number;
 }
 
 export interface IPostList {
-  getPopularPosts(): IPost[];
+  getPosts(): IPost[];
 }
 
 export interface ISpaceMemberID {
