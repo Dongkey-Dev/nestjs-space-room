@@ -20,10 +20,13 @@ export class SpaceRole
   spaceId: T_UUID;
   roleName: string;
   permission: z.infer<typeof permissionEnum>;
-  constructor(data?: z.infer<typeof spaceRoleSchema>) {
+  constructor(data: z.infer<typeof spaceRoleSchema>) {
     super(spaceRoleSchema);
-    if (data) this.import(data);
+    this.import(data);
     this.id = new T_UUID();
+  }
+  getSpaceId(): T_UUID {
+    return this.spaceId;
   }
   getId(): T_UUID {
     return this.id;
@@ -32,24 +35,23 @@ export class SpaceRole
     if (!this.roleName) throw new Error('Role name is not set');
     return this.roleName;
   }
-  setRole(role: string): boolean {
-    this.roleName = role;
-    return true;
-  }
   getPermission(): z.infer<typeof permissionEnum> {
     if (!this.permission) throw new Error('Permission is not set');
     return this.permission;
-  }
-  setPermission(permission: z.infer<typeof permissionEnum>): boolean {
-    this.permission = permission;
-    return true;
   }
 }
 
 describe('SpaceRole', () => {
   let spaceRole: SpaceRole;
+  const permission = 'admin';
+  const roleName = 'admin';
   beforeEach(() => {
-    spaceRole = new SpaceRole();
+    spaceRole = new SpaceRole({
+      id: new T_UUID(),
+      spaceId: new T_UUID(),
+      roleName: roleName,
+      permission: permission,
+    });
   });
 
   it('생성 확인', () => {
@@ -57,14 +59,10 @@ describe('SpaceRole', () => {
   });
 
   it('역할 설정 확인', () => {
-    const roleName = 'admin';
-    spaceRole.setRole(roleName);
     expect(spaceRole.getRole()).toEqual(roleName);
   });
 
   it('권한 설정 확인', () => {
-    const permission = 'admin';
-    spaceRole.setPermission(permission);
     expect(spaceRole.getPermission()).toEqual(permission);
   });
 });

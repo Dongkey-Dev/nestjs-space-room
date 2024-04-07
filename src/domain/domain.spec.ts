@@ -108,16 +108,32 @@ export interface ISpace {
 
 export interface ISpaceRole {
   getId(): T_UUID;
+  getSpaceId(): T_UUID;
   getRole(): string;
-  setRole(role: string): boolean;
   getPermission(): z.infer<typeof permissionEnum>;
-  setPermission(permission: z.infer<typeof permissionEnum>): boolean;
 }
 
 export interface IPost {
-  getComments(requester: T_UUID): IComment[];
-  writeComment(requester: T_UUID, comment: IComment): boolean;
-  deleteComment(requester: T_UUID, comment: IComment | T_UUID): boolean;
+  getId(): T_UUID;
+  getType(): 'notice' | 'question';
+  changeTypeNotice(spaceMember: ISpaceMember): boolean;
+  getTitle(): string;
+  changeTitle(title: string): boolean;
+  getContent(): string;
+  changeContent(content: string): boolean;
+  getAuthorId(): T_UUID;
+  getAuthorName(): string;
+  setAuthorName(authorName: string): boolean;
+  getAuthorProfileImage(): string;
+  setAuthorProfileImage(authorProfileImage: string): boolean;
+  getCreatedAt(): Date;
+  getUpdatedAt(): Date;
+
+  setRanking(ranking: number): boolean;
+}
+
+export interface IPostList {
+  getPopularPosts(): IPost[];
 }
 
 export interface IComment {
