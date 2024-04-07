@@ -116,16 +116,15 @@ export interface ISpaceRole {
 export interface IPost {
   getId(): T_UUID;
   getType(): 'notice' | 'question';
-  changeTypeNotice(spaceMember: ISpaceMember): boolean;
+  changeTypeNotice(
+    spaceMember: ISpaceMember,
+    spaceRole: ISpaceRole,
+    requester: T_UUID,
+  ): boolean;
   getTitle(): string;
-  changeTitle(title: string): boolean;
   getContent(): string;
-  changeContent(content: string): boolean;
   getAuthorId(): T_UUID;
-  getAuthorName(): string;
-  setAuthorName(authorName: string): boolean;
-  getAuthorProfileImage(): string;
-  setAuthorProfileImage(authorProfileImage: string): boolean;
+  getAuthorProfile(requester: ISpaceMemberID): z.infer<typeof profileSchema>;
   getCreatedAt(): Date;
   getUpdatedAt(): Date;
 
@@ -136,6 +135,13 @@ export interface IPostList {
   getPopularPosts(): IPost[];
 }
 
+export interface ISpaceMemberID {
+  isOwner(spaceId: T_UUID): boolean;
+  isAdmin(spaceId: T_UUID): boolean;
+  isMember(spaceId: T_UUID): boolean;
+  getUserId(): T_UUID;
+}
+
 export interface IComment {
   getContent(): string;
   writeContent(content: string): boolean;
@@ -144,3 +150,9 @@ export interface IComment {
   writeReply(requester: T_UUID, reply: IComment): boolean;
   deleteReply(requester: T_UUID, reply: IComment | T_UUID): boolean;
 }
+
+describe('domain', () => {
+  it('test', () => {
+    expect(true).toBeTruthy();
+  });
+});
