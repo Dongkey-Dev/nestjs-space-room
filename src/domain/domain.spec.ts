@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { IUUIDTransable, T_UUID } from 'src/util/uuid';
 
-export const roleEnum = z.enum(['admin', 'member']);
+export const permissionEnum = z.enum(['owner', 'admin', 'member']);
 
 export const userSchema = z.object({
   id: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
@@ -79,24 +79,39 @@ export interface IUser {
 }
 
 export interface ISpaceMember {
-  getRole(): ISpaceRole;
-  setRole(role: ISpaceRole): boolean;
-  getPermissions(): string[];
-  setPermissions(permissions: string[]): boolean;
-  getSpace(): ISpace;
+  getUserId(): T_UUID;
+  setUserId(userId: T_UUID): boolean;
+  getRoleId(): T_UUID;
+  setRoleId(roleId: T_UUID): boolean;
+  getSpaceId(): T_UUID;
+
+  changeRole(
+    requesterId: T_UUID,
+    ownerMember: ISpaceMember,
+    role: ISpaceRole,
+  ): boolean;
 }
 
 export interface ISpace {
-  joinSpace(user: IUser, code: string): boolean;
-  setOwner(owner: IUser): boolean;
-  getInviteCode(role: 'admin' | 'member'): string;
+  getId(): T_UUID;
+  getName(): string;
+  changeName(name: string, ownerMember: ISpaceMember): boolean;
+  getLogo(): string;
+  changeLogo(logo: string, ownerMember: ISpaceMember): boolean;
+
+  getOwnerId(): T_UUID;
+  changeOwner(
+    oldOwnerMember: ISpaceMember,
+    newOwnerMember: ISpaceMember,
+  ): boolean;
 }
 
 export interface ISpaceRole {
+  getId(): T_UUID;
   getRole(): string;
   setRole(role: string): boolean;
-  getPermission(): z.infer<typeof roleEnum>;
-  setPermission(permission: z.infer<typeof roleEnum>): boolean;
+  getPermission(): z.infer<typeof permissionEnum>;
+  setPermission(permission: z.infer<typeof permissionEnum>): boolean;
 }
 
 export interface IPost {
