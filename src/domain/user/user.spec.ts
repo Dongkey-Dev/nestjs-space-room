@@ -1,5 +1,5 @@
 import { BaseDomain } from '../base/baseDomain';
-import { ISpace, IUser } from '../domain.spec';
+import { ISpace, IUser, anonymousProfileSchema } from '../domain.spec';
 import { z } from 'zod';
 import { DomainManager } from '../base/domainManager';
 import { T_UUID } from '../../util/uuid';
@@ -39,17 +39,25 @@ export class User
   constructor(email: string, data?: z.input<typeof userSchema>) {
     super(userSchema);
     if (data) this.import(data);
-    this.id = new T_UUID();
+    if (!this.id) this.id = new T_UUID();
     this.email = email;
+  }
+  getAnonymousProfile(): z.infer<typeof anonymousProfileSchema> {
+    return anonymousProfileSchema.parse({});
   }
   getId(): T_UUID {
     return this.id;
   }
-  getProfile(requester?: T_UUID): z.output<typeof profileSchema> {
+  getProfile(requester?: T_UUID) {
     if (requester && requester === this.id) return this.exportJson();
     else return this.exportJsonWithOmitSchema({ email: true });
   }
-  setProfile(profile: Partial<z.infer<typeof userSchema>>): boolean {
+  setProfile(
+    profile: Partial<z.infer<typeof userSchema>>,
+    requester: T_UUID,
+  ): boolean {
+    if (!requester.isEqual(this.id))
+      throw new Error('Only owner can change profile');
     const setResult = this.importPartial(profile);
     if (!setResult) throw new Error('Profile set failed');
     return setResult;
@@ -70,11 +78,14 @@ describe('User', () => {
   it('프로필 조회시, 본인이 아닌경우 이메일을 제외한 프로필을 반환', () => {
     const beforeProfile = user.getProfile();
     expect(beforeProfile).toEqual({});
-    user.setProfile({
-      lastName: 'Doe',
-      firstName: 'John',
-      profileImage: 'https://example.com',
-    });
+    user.setProfile(
+      {
+        lastName: 'Doe',
+        firstName: 'John',
+        profileImage: 'https://example.com',
+      },
+      user.getId(),
+    );
     const profile = user.getProfile();
     expect(profile).toEqual({
       lastName: 'Doe',
@@ -84,11 +95,14 @@ describe('User', () => {
   });
 
   it('프로필 조회시, 본인인 경우 모든 프로필을 반환', () => {
-    user.setProfile({
-      lastName: 'Doe',
-      firstName: 'John',
-      profileImage: 'https://example.com',
-    });
+    user.setProfile(
+      {
+        lastName: 'Doe',
+        firstName: 'John',
+        profileImage: 'https://example.com',
+      },
+      user.getId(),
+    );
     expect(user.getProfile(user.getId())).toEqual({
       email: userEmail,
       lastName: 'Doe',
@@ -98,11 +112,14 @@ describe('User', () => {
   });
 
   it('본인이 아닌경우, 이메일을 제외한 프로필을 반환', () => {
-    user.setProfile({
-      lastName: 'Doe',
-      firstName: 'John',
-      profileImage: 'https://example.com',
-    });
+    user.setProfile(
+      {
+        lastName: 'Doe',
+        firstName: 'John',
+        profileImage: 'https://example.com',
+      },
+      user.getId(),
+    );
     expect(user.getProfile(new T_UUID())).toEqual({
       lastName: 'Doe',
       firstName: 'John',

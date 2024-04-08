@@ -21,7 +21,7 @@ export class SpaceMember
   constructor(data?: z.infer<typeof spaceMemberSchema>) {
     super(spaceMemberSchema);
     if (data) this.import(data);
-    this.id = new T_UUID();
+    if (!this.id) this.id = new T_UUID();
   }
   getUserId(): T_UUID {
     if (!this.userId) throw new Error('User id is not set');
@@ -64,6 +64,9 @@ export class SpaceMember
 }
 
 class MockSpaceRole implements ISpaceRole {
+  getSpaceId(): T_UUID {
+    throw new Error('Method not implemented.');
+  }
   id: T_UUID;
   setId(id: T_UUID): boolean {
     this.id = id;

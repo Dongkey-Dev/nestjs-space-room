@@ -8,21 +8,21 @@ import {
 import { IUUIDTransable, T_UUID } from 'src/util/uuid';
 import { BaseDomain } from '../base/baseDomain';
 
-export const spaceMemberIdSchema = z.object({
+export const spaceMemberIDSchema = z.object({
   spaceId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
   userId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
   permission: permissionEnum,
 });
 
-export class SpaceMemberId
-  extends BaseDomain<typeof spaceMemberIdSchema>
-  implements BaseDomain<typeof spaceMemberIdSchema>, ISpaceMemberID
+export class SpaceMemberID
+  extends BaseDomain<typeof spaceMemberIDSchema>
+  implements BaseDomain<typeof spaceMemberIDSchema>, ISpaceMemberID
 {
   private spaceId: T_UUID;
   private userId: T_UUID;
   private permission: z.infer<typeof permissionEnum>;
   constructor(member: ISpaceMember, role: ISpaceRole) {
-    super(spaceMemberIdSchema);
+    super(spaceMemberIDSchema);
     const con1 = member.getSpaceId().isEqual(role.getSpaceId());
     const con2 = member.getRoleId().isEqual(role.getId());
     if (con1 && con2) {
@@ -119,7 +119,7 @@ class MockSpaceRole implements ISpaceRole {
 }
 
 describe('SpaceMemberId', () => {
-  let adminSpaceMemberId: SpaceMemberId;
+  let adminSpaceMemberId: SpaceMemberID;
   let spaceMember: ISpaceMember;
   let adminSpaceRole: ISpaceRole;
 
@@ -137,7 +137,7 @@ describe('SpaceMemberId', () => {
   beforeEach(() => {
     adminSpaceRole = new MockSpaceRole(spaceId, new T_UUID(), adminPermission);
     spaceMember = new MockSpaceMember(spaceId, userId, adminSpaceRole.getId());
-    adminSpaceMemberId = new SpaceMemberId(spaceMember, adminSpaceRole);
+    adminSpaceMemberId = new SpaceMemberID(spaceMember, adminSpaceRole);
 
     ownerSpaceRole = new MockSpaceRole(spaceId, new T_UUID(), onwerPermission);
     ownerSpaceMember = new MockSpaceMember(
@@ -179,7 +179,7 @@ describe('SpaceMemberId', () => {
   });
 
   it('소유자의 소유자 확인', () => {
-    const ownerSpaceMemberId = new SpaceMemberId(
+    const ownerSpaceMemberId = new SpaceMemberID(
       ownerSpaceMember,
       ownerSpaceRole,
     );
@@ -187,7 +187,7 @@ describe('SpaceMemberId', () => {
   });
 
   it('소유자의 관리자 확인', () => {
-    const ownerSpaceMemberId = new SpaceMemberId(
+    const ownerSpaceMemberId = new SpaceMemberID(
       ownerSpaceMember,
       ownerSpaceRole,
     );
@@ -195,7 +195,7 @@ describe('SpaceMemberId', () => {
   });
 
   it('소유자의 멤버 확인', () => {
-    const ownerSpaceMemberId = new SpaceMemberId(
+    const ownerSpaceMemberId = new SpaceMemberID(
       ownerSpaceMember,
       ownerSpaceRole,
     );
@@ -203,7 +203,7 @@ describe('SpaceMemberId', () => {
   });
 
   it('멤버의 소유자 확인', () => {
-    const memberSpaceMemberId = new SpaceMemberId(
+    const memberSpaceMemberId = new SpaceMemberID(
       memberSpaceMember,
       memberSpaceRole,
     );
@@ -211,7 +211,7 @@ describe('SpaceMemberId', () => {
   });
 
   it('멤버의 관리자 확인', () => {
-    const memberSpaceMemberId = new SpaceMemberId(
+    const memberSpaceMemberId = new SpaceMemberID(
       memberSpaceMember,
       memberSpaceRole,
     );
@@ -219,7 +219,7 @@ describe('SpaceMemberId', () => {
   });
 
   it('멤버의 멤버 확인', () => {
-    const memberSpaceMemberId = new SpaceMemberId(
+    const memberSpaceMemberId = new SpaceMemberID(
       memberSpaceMember,
       memberSpaceRole,
     );
@@ -237,7 +237,7 @@ describe('SpaceMemberId', () => {
       userId,
       spaceRole2.getId(),
     );
-    expect(() => new SpaceMemberId(spaceMember2, adminSpaceRole)).toThrow();
+    expect(() => new SpaceMemberID(spaceMember2, adminSpaceRole)).toThrow();
   });
 
   it('SpaceMemberId 생성 실패', () => {
@@ -251,6 +251,6 @@ describe('SpaceMemberId', () => {
       userId,
       spaceRole2.getId(),
     );
-    expect(() => new SpaceMemberId(spaceMember2, adminSpaceRole)).toThrow();
+    expect(() => new SpaceMemberID(spaceMember2, adminSpaceRole)).toThrow();
   });
 });

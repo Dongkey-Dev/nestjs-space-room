@@ -23,7 +23,7 @@ export class SpaceRole
   constructor(data: z.infer<typeof spaceRoleSchema>) {
     super(spaceRoleSchema);
     this.import(data);
-    this.id = new T_UUID();
+    if (!this.id) this.id = new T_UUID();
   }
   getSpaceId(): T_UUID {
     return this.spaceId;

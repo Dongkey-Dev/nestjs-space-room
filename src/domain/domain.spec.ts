@@ -18,6 +18,12 @@ export const profileSchema = z.object({
   profileImage: z.string().url(),
 });
 
+export const anonymousProfileSchema = z.object({
+  lastName: z.string().default('anonymous'),
+  firstName: z.string().default('anonymous'),
+  profileImage: z.string().url().default('anonymous.png'),
+});
+
 export const updateProfileSchema = z.object({
   lastName: z.string().optional(),
   firstName: z.string().optional(),
@@ -53,16 +59,16 @@ export interface IPostManager {
   deletePost(post: IPost): boolean;
 }
 
-export interface ICommentManager {
-  createComment(
+export interface IChatManager {
+  createChat(
     writer: IUser,
     content: string,
     isAnonymous?: boolean,
-    parentComment?: IComment,
+    parentChat?: IChat,
   ): boolean;
-  getComment(id: T_UUID): IComment;
-  getComments(post: IPost): IComment[];
-  applyComment(comment: IComment): boolean;
+  getChat(id: T_UUID): IChat;
+  getChats(post: IPost): IChat[];
+  applyChat(chat: IChat): boolean;
 }
 
 export interface ISpaceMemberManager {
@@ -74,8 +80,12 @@ export interface ISpaceMemberManager {
 
 export interface IUser {
   getId(): T_UUID;
-  getProfile(requester?: T_UUID): z.infer<typeof profileSchema>;
-  setProfile(profile: z.infer<typeof updateProfileSchema>): boolean;
+  getProfile(requester?: T_UUID);
+  getAnonymousProfile(): z.infer<typeof anonymousProfileSchema>;
+  setProfile(
+    profile: z.infer<typeof updateProfileSchema>,
+    requester: T_UUID,
+  ): boolean;
 }
 
 export interface ISpaceMember {
@@ -116,6 +126,7 @@ export interface ISpaceRole {
 export interface IPost {
   getId(): T_UUID;
   getType(): 'notice' | 'question';
+  getSpaceId(): T_UUID;
   changeTypeNotice(spaceMember: ISpaceMemberID): boolean;
   getTitle(): string;
   getContent(): string;
@@ -126,8 +137,8 @@ export interface IPost {
   getAuthorId(): T_UUID;
   getAuthorProfile(requester: ISpaceMemberID): z.infer<typeof profileSchema>;
 
-  getTotalComments(): number;
-  setTotalComments(totalComments: number): boolean;
+  getTotalChats(): number;
+  setTotalChats(totalChats: number): boolean;
   getTotalParticipants(): number;
   setTotalParticipants(totalParticipants: number): boolean;
   setRanking(ranking: number): boolean;
@@ -145,13 +156,15 @@ export interface ISpaceMemberID {
   getUserId(): T_UUID;
 }
 
-export interface IComment {
-  getContent(): string;
-  writeContent(content: string): boolean;
-  writeReply(requester: T_UUID, comment: IComment): boolean;
-  getReplies(requester: T_UUID): IComment[];
-  writeReply(requester: T_UUID, reply: IComment): boolean;
-  deleteReply(requester: T_UUID, reply: IComment | T_UUID): boolean;
+export interface IChat {
+  getId(): T_UUID;
+  getPrevChatId(): T_UUID | false;
+  getContent(memberID: ISpaceMemberID);
+  setAuthor(user: IUser): boolean;
+  setReply(chat: IChat): void;
+  getPostId(): T_UUID;
+  writeReply(memberID: ISpaceMemberID, chat: IChat): boolean;
+  deleteChat(memberID: ISpaceMemberID): boolean;
 }
 
 describe('domain', () => {

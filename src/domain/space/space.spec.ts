@@ -20,7 +20,7 @@ export class Space
   constructor(data: z.infer<typeof spaceSchema>) {
     super(spaceSchema);
     this.import(data);
-    this.id = new T_UUID();
+    if (!this.id) this.id = new T_UUID();
   }
   getOwnerId(): T_UUID {
     return this.ownerId;

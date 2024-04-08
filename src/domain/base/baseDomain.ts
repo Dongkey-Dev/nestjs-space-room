@@ -26,6 +26,8 @@ export abstract class BaseDomain<T extends ZodObject<any>> {
           acc[key] = value.exportString();
         } else if (value instanceof ZodObject) {
           acc[key] = recursiveExport(value, schemaShape[key].shape);
+        } else if (value instanceof BaseDomain) {
+          acc[key] = value.exportJson();
         } else {
           acc[key] = value;
         }
@@ -37,7 +39,7 @@ export abstract class BaseDomain<T extends ZodObject<any>> {
 
   exportJsonWithOmitSchema(
     omitSchema: TrueMap<Partial<z.infer<typeof this.zodSchema>>>,
-  ): any {
+  ) {
     const currentData = this.exportJson();
     this.deleteKeys(currentData, omitSchema);
     return currentData;
@@ -57,10 +59,20 @@ export abstract class BaseDomain<T extends ZodObject<any>> {
   }
 
   import(data: z.input<typeof this.zodSchema>): any {
+    const parseResult = this.zodSchema.safeParse(data);
+    if (!parseResult.success) {
+      return false;
+    }
     Object.assign(this, this.zodSchema.parse(data));
+    return true;
   }
 
-  importPartial(data: Partial<z.infer<typeof this.zodSchema>>): any {
+  importPartial(data: Partial<z.input<typeof this.zodSchema>>): any {
+    const parseResult = this.zodSchema.partial().safeParse(data);
+    if (!parseResult.success) {
+      return false;
+    }
     Object.assign(this, this.zodSchema.partial().parse(data));
+    return true;
   }
 }

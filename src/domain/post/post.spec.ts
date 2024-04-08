@@ -4,16 +4,11 @@ import { IUUIDTransable, T_UUID } from 'src/util/uuid';
 import {
   IPost,
   IPostList,
-  ISpaceMember,
   ISpaceMemberID,
-  ISpaceRole,
   IUser,
-  permissionEnum,
   profileSchema,
   userSchema,
 } from '../domain.spec';
-import { adminEnum } from '../spaceRole/spaceRole.spec';
-import exp from 'constants';
 
 export const postType = z.enum(['notice', 'question']).default('question');
 export const anonymousProfile: z.infer<typeof profileSchema> = {
@@ -41,6 +36,14 @@ export class PostList implements IPostList {
   posts: IPost[];
   total: number;
   constructor(posts: IPost[]) {
+    // 입력받은 posts의 모든 인자의 spaceId가 동일한지 확인하고, 동일하지 않다면 에러 발생
+    if (
+      posts.some((post) => post.getSpaceId() !== posts[0].getSpaceId()) ||
+      posts.length === 0
+    ) {
+      throw new Error('All posts should have the same spaceId');
+    }
+    this.spaceId = posts[0].getSpaceId();
     this.posts = posts;
     this.total = posts.length;
   }
@@ -51,8 +54,8 @@ export class PostList implements IPostList {
      * 2. 댓글에 참여한 유저 수
      */
     this.posts = this.posts.sort((a, b) => {
-      const totalCommentsA = a.getTotalComments() || 0;
-      const totalCommentsB = b.getTotalComments() || 0;
+      const totalCommentsA = a.getTotalChats() || 0;
+      const totalCommentsB = b.getTotalChats() || 0;
       if (totalCommentsA !== totalCommentsB) {
         return totalCommentsB - totalCommentsA;
       }
@@ -95,9 +98,12 @@ export class Post
   constructor(data: z.input<typeof postSchema>) {
     super(postSchema);
     this.import(data);
-    this.id = new T_UUID();
+    if (!this.id) this.id = new T_UUID();
   }
-  setTotalComments(totalComments: number): boolean {
+  getSpaceId(): T_UUID {
+    return this.spaceId;
+  }
+  setTotalChats(totalComments: number): boolean {
     this.totalComments = totalComments;
     return true;
   }
@@ -105,7 +111,7 @@ export class Post
     this.totalParticipants = totalParticipants;
     return true;
   }
-  getTotalComments(): number {
+  getTotalChats(): number {
     return this.totalComments;
   }
   getTotalParticipants(): number {
@@ -240,6 +246,13 @@ class MockUser implements IUser {
     this.lastName = lastName;
     this.profileImage = profileImage;
   }
+  getAnonymousProfile(): {
+    lastName?: string;
+    firstName?: string;
+    profileImage?: string;
+  } {
+    throw new Error('Method not implemented.');
+  }
   getId(): T_UUID {
     throw new Error('Method not implemented.');
   }
@@ -300,11 +313,11 @@ describe('Post', () => {
   });
 
   it('게시글 댓글 설정 확인', () => {
-    expect(post.getTotalComments()).toEqual(0);
+    expect(post.getTotalChats()).toEqual(0);
     expect(post.getTotalParticipants()).toEqual(0);
-    post.setTotalComments(10);
+    post.setTotalChats(10);
     post.setTotalParticipants(5);
-    expect(post.getTotalComments()).toEqual(10);
+    expect(post.getTotalChats()).toEqual(10);
     expect(post.getTotalParticipants()).toEqual(5);
   });
 
@@ -346,5 +359,136 @@ describe('Post', () => {
     const omitEmail = { ...mockUserData };
     delete omitEmail.email;
     expect(post.getAuthorProfile(mockMemberID)).toEqual(omitEmail);
+  });
+});
+
+class MockPost implements IPost {
+  private id: T_UUID;
+  private type: 'notice' | 'question' = 'question';
+  private spaceId: T_UUID;
+  private isAnon: boolean;
+  private title: string;
+  private content: string;
+  private authorId: T_UUID;
+  private author?: IUser;
+  private createdAt: Date;
+  private updatedAt: Date;
+
+  private totalComments?: number = 0;
+  private totalParticipants?: number = 0;
+  private ranking?: number;
+  constructor(
+    spaceId: T_UUID,
+    isAnon: boolean,
+    title: string,
+    content: string,
+    authorId: T_UUID,
+    totalComments: number = 0,
+    totalParticipants: number = 0,
+  ) {
+    this.id = new T_UUID();
+    this.spaceId = spaceId;
+    this.isAnon = isAnon;
+    this.title = title;
+    this.content = content;
+    this.authorId = authorId;
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
+    this.totalComments = totalComments;
+    this.totalParticipants = totalParticipants;
+  }
+  setRanking(ranking: number): boolean {
+    this.ranking = ranking;
+    return true;
+  }
+  getRanking(): number {
+    throw new Error('Method not implemented.');
+  }
+  getSpaceId(): T_UUID {
+    return this.spaceId;
+  }
+  setTotalChats(totalComments: number): boolean {
+    this.totalComments = totalComments;
+    return true;
+  }
+  setTotalParticipants(totalParticipants: number): boolean {
+    this.totalParticipants = totalParticipants;
+    return true;
+  }
+  getTotalChats(): number {
+    return this.totalComments;
+  }
+  getTotalParticipants(): number {
+    return this.totalParticipants;
+  }
+  getContent(): string {
+    return this.content;
+  }
+  setAuthor(author: IUser): boolean {
+    if (this.author) throw new Error('Author is already set');
+    this.author = author;
+    return true;
+  }
+  getAuthorId(): T_UUID {
+    return this.authorId;
+  }
+  getAuthorProfile(requester: ISpaceMemberID): z.infer<typeof profileSchema> {
+    throw new Error('Method not implemented.');
+  }
+  getCreatedAt(): Date {
+    throw new Error('Method not implemented.');
+  }
+  getUpdatedAt(): Date {
+    return this.updatedAt;
+  }
+  getId(): T_UUID {
+    return this.id;
+  }
+  getType(): 'notice' | 'question' {
+    return this.type;
+  }
+  getTitle(): string {
+    return this.title;
+  }
+  changeTypeNotice(spaceMember: ISpaceMemberID): boolean {
+    throw new Error('Method not implemented.');
+  }
+}
+
+describe('PostList', () => {
+  let wrongPostList: PostList;
+  let postList: PostList;
+  const postId = new T_UUID();
+  const posts = [
+    new MockPost(postId, false, 'test', 'test', new T_UUID(), 8, 4),
+    new MockPost(postId, false, 'test', 'test', new T_UUID(), 10, 5),
+    new MockPost(postId, false, 'test', 'test', new T_UUID(), 10, 4),
+  ];
+  const wrongPosts = [
+    new MockPost(new T_UUID(), false, 'test', 'test', new T_UUID(), 10, 5),
+    new MockPost(new T_UUID(), false, 'test', 'test', new T_UUID(), 10, 4),
+    new MockPost(new T_UUID(), false, 'test', 'test', new T_UUID(), 8, 4),
+  ];
+
+  beforeEach(() => {
+    postList = new PostList(posts);
+  });
+
+  it('생성 확인', () => {
+    expect(postList).toBeTruthy();
+  });
+
+  it('서로 다른 posts는 PostList가 될 수 없다.', () => {
+    expect(() => (wrongPostList = new PostList(wrongPosts))).toThrow();
+  });
+
+  it('게시글 rank를 매겼을 때, 순서 확인', () => {
+    const rankedPosts = postList.getPosts();
+    expect(rankedPosts[0].getTotalChats()).toEqual(10);
+    expect(rankedPosts[0].getTotalParticipants()).toEqual(5);
+    expect(rankedPosts[1].getTotalChats()).toEqual(10);
+    expect(rankedPosts[1].getTotalParticipants()).toEqual(4);
+    expect(rankedPosts[2].getTotalChats()).toEqual(8);
+    expect(rankedPosts[2].getTotalParticipants()).toEqual(4);
   });
 });
