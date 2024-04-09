@@ -1,6 +1,6 @@
 import { ZodObject, z } from 'zod';
-import { IDomainChange } from './domainChange';
 import { T_UUID } from '../../util/uuid';
+import { IDomainChange } from './domainChange';
 
 type TrueMap<T> = {
   [P in keyof T]?: T[P] extends object ? TrueMap<T[P]> : true;
@@ -34,6 +34,26 @@ export abstract class BaseDomain<T extends ZodObject<any>> {
         return acc;
       }, {});
     };
+    return recursiveExport(this, this.zodSchema.shape);
+  }
+
+  exportPersistence() {
+    const recursiveExport = (obj: any, schemaShape: any): any => {
+      return Object.keys(schemaShape).reduce((acc, key) => {
+        const value = obj[key];
+
+        if (value instanceof T_UUID) {
+          acc[key] = value.exportBuffer();
+        } else if (value instanceof ZodObject) {
+          acc[key] = recursiveExport(value, schemaShape[key].shape);
+        } else {
+          acc[key] = value;
+        }
+
+        return acc;
+      }, {});
+    };
+
     return recursiveExport(this, this.zodSchema.shape);
   }
 

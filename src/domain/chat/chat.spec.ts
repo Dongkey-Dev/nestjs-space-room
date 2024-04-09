@@ -1,102 +1,8 @@
-import { IUUIDTransable, T_UUID } from 'src/util/uuid';
-import { z } from 'zod';
-import { IChat, ISpaceMemberID, IUser, userSchema } from '../domain.spec';
+import { T_UUID } from 'src/util/uuid';
+import { IUser, userSchema } from '../user/user.interface';
+import { Chat } from './chat';
+import { ISpaceMemberID } from '../spaceMemberID/spaceMemberID.interface';
 import { BaseDomain } from '../base/baseDomain';
-
-export const chatSchema = z.object({
-  id: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
-  spaceId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
-  authorId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
-  postId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
-  content: z.string(),
-  prevChatId: z
-    .custom<IUUIDTransable>()
-    .transform((val) => new T_UUID(val))
-    .optional(),
-  isAnonymous: z.boolean(),
-  author: userSchema.optional(),
-});
-
-export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
-  private id: T_UUID;
-  private spaceId: T_UUID;
-  private authorId: T_UUID;
-  private content: string;
-  private postId: T_UUID;
-  private prevChatId?: T_UUID;
-  private isAnonymous: boolean;
-  private author: IUser;
-  constructor(data: z.infer<typeof chatSchema>) {
-    super(chatSchema);
-    this.import(data);
-    if (!this.id) this.id = new T_UUID();
-  }
-  setAuthor(user: IUser): boolean {
-    if (!this.authorId.isEqual(user.getId()))
-      throw new Error('chat author not matched with user');
-    this.author = user;
-    return true;
-  }
-  deleteChat(memberID: ISpaceMemberID): boolean {
-    if (
-      !(
-        memberID.isAdmin(this.spaceId) ||
-        memberID.getUserId().isEqual(this.authorId)
-      )
-    )
-      throw new Error('Not allowed');
-    return true;
-  }
-  setReply(chat: IChat): void {
-    this.prevChatId = chat.getId();
-  }
-
-  getId(): T_UUID {
-    return this.id;
-  }
-
-  getPrevChatId(): T_UUID | false {
-    if (!this.prevChatId) return false;
-    return this.prevChatId;
-  }
-
-  getPostId(): T_UUID {
-    return this.postId;
-  }
-
-  writeReply(memberID: ISpaceMemberID, chat: IChat): boolean {
-    const cond1 = !memberID.isMember(this.spaceId);
-    const cond2 = !this.getPostId().isEqual(chat.getPostId());
-    if (cond1 || cond2) throw new Error('Not allowed');
-    chat.setReply(this);
-    return true;
-  }
-
-  getContent(memberID: ISpaceMemberID) {
-    const content = this.exportJson();
-    delete content.author.email;
-    if (memberID.isAdmin(this.spaceId)) return content;
-    if (this.isAnonymous && !memberID.getUserId().isEqual(this.authorId)) {
-      const output = this.exportJson();
-      const anonymousProfile = this.author.getAnonymousProfile();
-      output.author = anonymousProfile;
-      return output;
-    }
-    return content;
-  }
-
-  changeContent(memberID: ISpaceMemberID, content: string): boolean {
-    if (
-      !(
-        memberID.isMember(this.spaceId) &&
-        memberID.getUserId().isEqual(this.authorId)
-      )
-    )
-      throw new Error('Not allowed');
-    this.content = content;
-    return true;
-  }
-}
 
 class MockSpaceMember implements ISpaceMemberID {
   userId: T_UUID;
@@ -158,6 +64,24 @@ class MockUser extends BaseDomain<typeof userSchema> implements IUser {
     this.firstName = firstName;
     this.profileImage = profileImage;
   }
+  login(password: string): boolean {
+    throw new Error('Method not implemented.');
+  }
+  keepPassword(password: string): void {
+    throw new Error('Method not implemented.');
+  }
+  popPassword(): string | false {
+    throw new Error('Method not implemented.');
+  }
+  setProfile(profile: {
+    id?: T_UUID;
+    email?: string;
+    lastName?: string;
+    firstName?: string;
+    profileImage?: string;
+  }): boolean {
+    throw new Error('Method not implemented.');
+  }
 
   getId(): T_UUID {
     return this.id;
@@ -180,7 +104,7 @@ class MockUser extends BaseDomain<typeof userSchema> implements IUser {
       profileImage: 'anonymous.png',
     };
   }
-  setProfile(
+  updateProfile(
     profile: { lastName?: string; firstName?: string; profileImage?: string },
     requester: T_UUID,
   ): boolean {

@@ -1,7 +1,9 @@
 import { IUUIDTransable, T_UUID } from 'src/util/uuid';
 import { BaseDomain } from '../base/baseDomain';
-import { ISpace, ISpaceMember, ISpaceRole } from '../domain.spec';
 import { z } from 'zod';
+import { ISpaceMember } from '../spaceMember/spaceMember.interface';
+import { ISpace } from './space.interface';
+import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 
 const spaceSchema = z.object({
   name: z.string(),

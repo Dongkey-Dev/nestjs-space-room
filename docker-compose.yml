@@ -4,7 +4,7 @@ services:
     ports:
       - ${DEV_DATABASE_PORT}:3306
     volumes:
-      - ./localdb/mysql:/var/lib/mysql
+      - ./localdb/dev_mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DEV_DATABASE_PASSWORD}
       MYSQL_DATABASE: ${DEV_DATABASE_NAME}
@@ -14,7 +14,7 @@ services:
     ports:
       - ${PROD_DATABASE_PORT}:3306
     volumes:
-      - ./localdb/mysql:/var/lib/mysql
+      - ./localdb/prod_mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${PROD_DATABASE_PASSWORD}
       MYSQL_DATABASE: ${PROD_DATABASE_NAME}
