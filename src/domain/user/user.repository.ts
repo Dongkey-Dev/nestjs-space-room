@@ -1,6 +1,6 @@
 import { T_UUID } from 'src/util/uuid';
 import { BaseDomain } from '../base/baseDomain';
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { z } from 'zod';
 import { UserEntity } from 'src/database/entities/user.entity';
@@ -58,7 +58,9 @@ export class UserRepository implements IUserRepository {
       .then(() => {
         return true;
       })
-      .catch(() => {
+      .catch((e) => {
+        if (e.code === 'ER_DUP_ENTRY')
+          throw new BadRequestException('Email already exists');
         return false;
       });
   }

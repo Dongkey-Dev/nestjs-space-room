@@ -51,12 +51,9 @@ export class UserSerivce implements UserUsecase {
   ): Promise<IUser> {
     const user = await this.userManager.getDomain(id);
     user.updateProfile(dto, id);
-    this.userManager
-      .applyDomain(user)
-      .then(() => {
-        return user;
-      })
-      .catch(() => {});
+    this.userManager.applyDomain(user).then(() => {
+      return user;
+    });
     return user;
   }
   async getUser(id: T_UUID): Promise<IUser | []> {
