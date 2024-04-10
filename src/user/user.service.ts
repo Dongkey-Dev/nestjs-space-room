@@ -20,16 +20,12 @@ export class UserSerivce implements UserUsecase {
     private readonly jwtService: JwtService,
   ) {}
   private getJwtToken(user: IUser) {
-    const profile = user.getProfile();
-
     const accessToken = this.jwtService.sign({
-      id: user.getId(),
-      email: profile.email,
+      id: user.getId().exportString(),
     });
     const refreshToken = this.jwtService.sign(
       {
-        id: user.getId(),
-        email: profile.email,
+        id: user.getId().exportString(),
       },
       {
         expiresIn: '7d',
@@ -40,7 +36,7 @@ export class UserSerivce implements UserUsecase {
 
   async loginUser(email: string, password: string): Promise<LoginResult> {
     const user = await this.userManager.getUserForLogin(email);
-    user.login(password);
+    await user.login(password);
     const { accessToken, refreshToken } = this.getJwtToken(user);
     return { user, accessToken, refreshToken };
   }
@@ -56,10 +52,9 @@ export class UserSerivce implements UserUsecase {
     });
     return user;
   }
-  async getUser(id: T_UUID): Promise<IUser | []> {
+  async getUser(id: T_UUID): Promise<IUser> {
     const user = await this.userManager.getDomain(id);
     if (user.isValid()) return user;
-    return [];
   }
   async createUser(dto: z.infer<typeof createUserDtoSchema>) {
     const user = await this.userManager.createDomain();

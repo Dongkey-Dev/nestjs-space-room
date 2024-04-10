@@ -5,6 +5,10 @@ import { DomainManager } from '../base/domainManager';
 import { z } from 'zod';
 import * as bcrypt from 'bcrypt';
 import { ISpace } from '../space/space.interface';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 export class User
   extends BaseDomain<typeof userSchema>
@@ -25,12 +29,16 @@ export class User
     if (data) this.import(data);
     if (!this.id) this.id = new T_UUID();
   }
-  login(password: string): boolean {
-    if (this.isValid() && bcrypt.compare(password, this.popPassword())) {
-      return true;
+  async login(hashedPassword: string): Promise<boolean> {
+    if (!this.password)
+      throw new InternalServerErrorException('password not set');
+    const loginResult = await bcrypt.compare(hashedPassword, this.password);
+    if (!loginResult) {
+      throw new BadRequestException('login failed');
     }
-    throw new Error('login failed');
+    return true;
   }
+
   keepPassword(password: string) {
     if (this.password) throw new Error('password already set');
     this.password = password;
@@ -57,7 +65,7 @@ export class User
     return this.id;
   }
   getProfile(requester?: T_UUID) {
-    if (requester && requester === this.id) return this.exportJson();
+    if (requester && requester.isEqual(this.id)) return this.exportJson();
     else return this.exportJsonWithOmitSchema({ email: true });
   }
   updateProfile(

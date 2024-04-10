@@ -40,7 +40,7 @@ export const updateProfileSchema = z.object({
 });
 
 export interface IUser {
-  login(password: string): boolean;
+  login(password: string): Promise<boolean>;
   keepPassword(password: string): void;
   popPassword(): string | false;
 

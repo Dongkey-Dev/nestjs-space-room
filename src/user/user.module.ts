@@ -4,15 +4,17 @@ import { UserController } from './user.controller';
 import { UserSerivce } from './user.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/util/strategy/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     UserDomainModule,
+    PassportModule,
     JwtModule.registerAsync({
-      useFactory: async () => ({
+      useFactory: () => ({
         secret: process.env.JWT_SECRET_KEY,
         signOptions: {
-          expiresIn: '7d',
+          expiresIn: '1h',
         },
       }),
     }),
@@ -21,7 +23,7 @@ import { JwtStrategy } from 'src/util/strategy/jwt.strategy';
   providers: [
     {
       provide: 'JWT_STRATEGY',
-      useFactory: async () => {
+      useFactory: () => {
         const secret = process.env.JWT_SECRET_KEY;
         return new JwtStrategy(secret);
       },

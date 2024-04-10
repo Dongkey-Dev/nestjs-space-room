@@ -1,4 +1,5 @@
 import { T_UUID } from '../../util/uuid';
+import * as bcrypt from 'bcrypt';
 import { User } from './user';
 
 describe('User', () => {
@@ -90,5 +91,38 @@ describe('User', () => {
       firstName: 'John',
       profileImage: 'https://example.com',
     });
+  });
+
+  it('비밀번호 설정', () => {
+    const password = 'password';
+    user.keepPassword(password);
+    expect(user.popPassword()).toEqual(password);
+  });
+
+  it('비밀번호 설정후, 다시 설정할 경우 에러 발생', () => {
+    const password = 'password';
+    user.keepPassword(password);
+    expect(() => {
+      user.keepPassword(password);
+    }).toThrow(/password/);
+  });
+
+  it('비밀번호 설정후, 비밀번호 확인', async () => {
+    const password = 'password';
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    user.keepPassword(hashedPassword);
+    expect(await user.login(password)).toBeTruthy();
+  });
+
+  it('비밀번호 설정후, 다른 비밀번호로 로그인시 에러 발생', async () => {
+    const password = 'password';
+    user.keepPassword(password);
+    await expect(user.login('password2')).rejects.toThrow(/login failed/);
+  });
+
+  it('비밀번호 설정되지 않은 경우, 로그인시 에러 발생', () => {
+    expect(async () => {
+      await user.login('password');
+    }).rejects.toThrow(/password/);
   });
 });

@@ -86,9 +86,10 @@ class MockUser implements IUser {
     this.lastName = lastName;
     this.profileImage = profileImage;
   }
-  login(password: string): boolean {
+  login(password: string): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
+
   keepPassword(password: string): void {
     throw new Error('Method not implemented.');
   }

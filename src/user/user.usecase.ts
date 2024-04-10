@@ -41,5 +41,5 @@ export interface UserUsecase {
     id: T_UUID,
     dto: z.infer<typeof updateUserDtoSchema>,
   ): Promise<IUser>;
-  getUser(id: T_UUID): Promise<IUser | []>;
+  getUser(id: T_UUID): Promise<IUser>;
 }

@@ -20,7 +20,10 @@ export class UserRepository implements IUserRepository {
   async getUserForLogin(email: string): Promise<IUser> {
     const userEntity = await this.dataSource
       .getRepository(UserEntity)
-      .findOne({ where: { email } });
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
     if (!userEntity) return new User();
     const user = new User(userEntity);
     user.keepPassword(userEntity.password);

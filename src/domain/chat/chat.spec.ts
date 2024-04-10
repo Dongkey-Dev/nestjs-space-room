@@ -64,9 +64,10 @@ class MockUser extends BaseDomain<typeof userSchema> implements IUser {
     this.firstName = firstName;
     this.profileImage = profileImage;
   }
-  login(password: string): boolean {
+  login(password: string): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
+
   keepPassword(password: string): void {
     throw new Error('Method not implemented.');
   }
