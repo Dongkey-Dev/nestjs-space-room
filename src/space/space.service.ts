@@ -5,7 +5,7 @@ import { T_UUID } from 'src/util/uuid';
 @Injectable()
 export class SpaceSerivce implements SpaceUsecase {
   constructor() {}
-  createSpace(dto: {
+  create(dto: {
     name?: string;
     logo?: string;
     ownerId?: T_UUID;

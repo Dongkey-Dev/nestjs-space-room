@@ -8,9 +8,9 @@ import {
 import { z } from 'zod';
 import { T_UUID } from 'src/util/uuid';
 import { IUserManager } from 'src/domain/user/user.manager.interface';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/domain/user/user.interface';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserSerivce implements UserUsecase {

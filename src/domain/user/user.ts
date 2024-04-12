@@ -3,12 +3,12 @@ import { BaseDomain } from '../base/baseDomain';
 import { IUser, anonymousProfileSchema, userSchema } from './user.interface';
 import { DomainManager } from '../base/domainManager';
 import { z } from 'zod';
-import * as bcrypt from 'bcrypt';
 import { ISpace } from '../space/space.interface';
 import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 export class User
   extends BaseDomain<typeof userSchema>
