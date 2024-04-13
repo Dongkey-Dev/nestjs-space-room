@@ -4,9 +4,24 @@ import { ISpaceMember } from '../spaceMember/spaceMember.interface';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 
 export const spaceSchema = z.object({
+  id: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
   name: z.string(),
-  logo: z.string().url(),
+  logo: z.string(),
   ownerId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export const spacePersistenceSchema = z.object({
+  id: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+  name: z.string().optional(),
+  logo: z.string().optional(),
+  ownerId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer())
+    .optional(),
 });
 
 export interface ISpace {
@@ -22,4 +37,5 @@ export interface ISpace {
     newOwnerMember: ISpaceMember,
   ): boolean;
   removeRole(requester: T_UUID, spaceRole: ISpaceRole): boolean;
+  exportSpaceData(): z.infer<typeof spacePersistenceSchema>;
 }

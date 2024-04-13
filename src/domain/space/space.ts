@@ -1,7 +1,7 @@
 import { T_UUID } from 'src/util/uuid';
 import { BaseDomain } from '../base/baseDomain';
 import { z } from 'zod';
-import { ISpace, spaceSchema } from './space.interface';
+import { ISpace, spacePersistenceSchema, spaceSchema } from './space.interface';
 import { ISpaceMember } from '../spaceMember/spaceMember.interface';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 
@@ -13,10 +13,16 @@ export class Space
   private name: string;
   private logo: string;
   private ownerId: T_UUID;
-  constructor(data: z.infer<typeof spaceSchema>) {
+  private createdAt?: Date;
+  private updatedAt?: Date;
+
+  constructor(data?: z.infer<typeof spaceSchema>) {
     super(spaceSchema);
     this.import(data);
     if (!this.id) this.id = new T_UUID();
+  }
+  exportSpaceData(): z.infer<typeof spacePersistenceSchema> {
+    return this.exportPersistence();
   }
   removeRole(requester: T_UUID, spaceRole: ISpaceRole): boolean {
     if (this.ownerId.isEqual(requester)) {
