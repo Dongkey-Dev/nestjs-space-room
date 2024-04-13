@@ -11,15 +11,20 @@ export class SpaceRole
   extends BaseDomain<typeof spaceRoleSchema>
   implements BaseDomain<typeof spaceRoleSchema>, ISpaceRole
 {
-  id: T_UUID;
-  spaceId: T_UUID;
-  roleName: string;
-  permission: z.infer<typeof permissionEnum>;
+  private id: T_UUID;
+  private spaceId: T_UUID;
+  private roleName: string;
+  private permission: z.infer<typeof permissionEnum>;
   constructor(data: z.infer<typeof spaceRoleSchema>) {
     super(spaceRoleSchema);
     this.import(data);
     if (!this.id) this.id = new T_UUID();
   }
+  setTobeRemove(): boolean {
+    this.changes.setToBeRemoved({ id: this.id });
+    return true;
+  }
+
   getSpaceId(): T_UUID {
     return this.spaceId;
   }

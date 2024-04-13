@@ -29,16 +29,8 @@ export class SpaceMemberID
   getUserId(): T_UUID {
     return this.userId;
   }
-  isOwner(spaceId: T_UUID): boolean {
-    if (this.spaceId.isEqual(spaceId) && this.permission === 'owner')
-      return true;
-    return false;
-  }
   isAdmin(spaceId: T_UUID): boolean {
-    if (
-      this.spaceId.isEqual(spaceId) &&
-      (this.permission === 'admin' || this.permission === 'owner')
-    )
+    if (this.spaceId.isEqual(spaceId) && this.permission === 'admin')
       return true;
     return false;
   }

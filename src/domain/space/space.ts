@@ -3,6 +3,7 @@ import { BaseDomain } from '../base/baseDomain';
 import { z } from 'zod';
 import { ISpace, spaceSchema } from './space.interface';
 import { ISpaceMember } from '../spaceMember/spaceMember.interface';
+import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 
 export class Space
   extends BaseDomain<typeof spaceSchema>
@@ -17,6 +18,14 @@ export class Space
     this.import(data);
     if (!this.id) this.id = new T_UUID();
   }
+  removeRole(requester: T_UUID, spaceRole: ISpaceRole): boolean {
+    if (this.ownerId.isEqual(requester)) {
+      spaceRole.setTobeRemove();
+      return true;
+    }
+    throw new Error('Only owner can remove role');
+  }
+
   getOwnerId(): T_UUID {
     return this.ownerId;
   }

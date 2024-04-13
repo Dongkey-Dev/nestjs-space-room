@@ -1,6 +1,7 @@
 import { IUUIDTransable, T_UUID } from 'src/util/uuid';
 import { z } from 'zod';
 import { ISpaceMember } from '../spaceMember/spaceMember.interface';
+import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 
 export const spaceSchema = z.object({
   name: z.string(),
@@ -20,4 +21,5 @@ export interface ISpace {
     oldOwnerMember: ISpaceMember,
     newOwnerMember: ISpaceMember,
   ): boolean;
+  removeRole(requester: T_UUID, spaceRole: ISpaceRole): boolean;
 }

@@ -1,109 +1,7 @@
-import { IUUIDTransable, T_UUID } from 'src/util/uuid';
-import { BaseDomain } from '../base/baseDomain';
-import { z } from 'zod';
+import { T_UUID } from 'src/util/uuid';
 import { ISpaceMember } from '../spaceMember/spaceMember.interface';
-import { ISpace } from './space.interface';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
-
-const spaceSchema = z.object({
-  name: z.string(),
-  logo: z.string().url(),
-  ownerId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
-});
-
-export class Space
-  extends BaseDomain<typeof spaceSchema>
-  implements BaseDomain<typeof spaceSchema>, ISpace
-{
-  private id: T_UUID;
-  private name: string;
-  private logo: string;
-  private ownerId: T_UUID;
-  constructor(data: z.infer<typeof spaceSchema>) {
-    super(spaceSchema);
-    this.import(data);
-    if (!this.id) this.id = new T_UUID();
-  }
-  getOwnerId(): T_UUID {
-    return this.ownerId;
-  }
-  getId(): T_UUID {
-    return this.id;
-  }
-  getName(): string {
-    if (!this.name) throw new Error('Name is not set');
-    return this.name;
-  }
-  changeName(name: string, ownerMember: ISpaceMember): boolean {
-    if (
-      ownerMember.getSpaceId() === this.getId() &&
-      ownerMember.getUserId() === this.ownerId
-    ) {
-      this.name = name;
-      return true;
-    }
-    throw new Error('Only owner can change space name');
-  }
-  getLogo(): string {
-    if (!this.logo) throw new Error('Logo is not set');
-    return this.logo;
-  }
-  changeLogo(logo: string, ownerMember: ISpaceMember): boolean {
-    if (
-      ownerMember.getSpaceId() === this.getId() &&
-      ownerMember.getUserId() === this.ownerId
-    ) {
-      this.logo = logo;
-      return true;
-    }
-    throw new Error('Only owner can change space logo');
-  }
-
-  changeOwner(
-    oldOwnerMember: ISpaceMember,
-    newOwnerMember: ISpaceMember,
-  ): boolean {
-    if (
-      oldOwnerMember.getSpaceId() === this.getId() &&
-      oldOwnerMember.getUserId() === this.ownerId
-    ) {
-      this.ownerId = newOwnerMember.getUserId();
-      return true;
-    }
-    throw new Error('Only owner can change owner');
-  }
-}
-
-class MockSpaceMember implements ISpaceMember {
-  userId: T_UUID;
-  spaceId: T_UUID;
-  constructor(userId: T_UUID, spaceId: T_UUID) {
-    this.userId = userId;
-    this.spaceId = spaceId;
-  }
-  changeRole(
-    requesterId: T_UUID,
-    ownerMember: ISpaceMember,
-    role: ISpaceRole,
-  ): boolean {
-    throw new Error('Method not implemented.');
-  }
-  getUserId(): T_UUID {
-    return this.userId;
-  }
-  setUserId(userId: T_UUID): boolean {
-    throw new Error('Method not implemented.');
-  }
-  getRoleId(): T_UUID {
-    throw new Error('Method not implemented.');
-  }
-  setRoleId(roleId: T_UUID): boolean {
-    throw new Error('Method not implemented.');
-  }
-  getSpaceId(): T_UUID {
-    return this.spaceId;
-  }
-}
+import { Space } from './space';
 
 describe('Space', () => {
   let space: Space;
@@ -144,4 +42,97 @@ describe('Space', () => {
     const ownerMember = new MockSpaceMember(new T_UUID(), space.getId());
     expect(() => space.changeLogo(logo, ownerMember)).toThrow();
   });
+
+  it('소유자 변경 확인', () => {
+    const oldOwnerMember = new MockSpaceMember(
+      space.getOwnerId(),
+      space.getId(),
+    );
+    const newOwnerMember = new MockSpaceMember(new T_UUID(), space.getId());
+    space.changeOwner(oldOwnerMember, newOwnerMember);
+    expect(space.getOwnerId()).toEqual(newOwnerMember.getUserId());
+  });
+
+  it('소유자 변경 실패 확인', () => {
+    const oldOwnerMember = new MockSpaceMember(new T_UUID(), space.getId());
+    const newOwnerMember = new MockSpaceMember(new T_UUID(), space.getId());
+    expect(() => space.changeOwner(oldOwnerMember, newOwnerMember)).toThrow();
+  });
+
+  it('소유자 Role 삭제 확인', () => {
+    const mockSpaceRole = new MockSpaceRole(
+      space.getId(),
+      new T_UUID(),
+      'admin',
+    );
+    space.removeRole(space.getOwnerId(), mockSpaceRole);
+    expect(mockSpaceRole.setTobeRemove()).toBeTruthy();
+  });
+
+  it('소유자 Role 삭제 실패 확인', () => {
+    const mockSpaceRole = new MockSpaceRole(
+      space.getId(),
+      new T_UUID(),
+      'member',
+    );
+    expect(() => space.removeRole(new T_UUID(), mockSpaceRole)).toThrow();
+  });
 });
+
+class MockSpaceRole implements ISpaceRole {
+  id: T_UUID;
+  spaceId: T_UUID;
+  roleName: string;
+  permission: 'admin' | 'member';
+  constructor(spaceId: T_UUID, id: T_UUID, permission: 'admin' | 'member') {
+    this.spaceId = spaceId;
+    this.id = id;
+    this.permission = permission;
+  }
+  getId(): T_UUID {
+    return this.id;
+  }
+  getSpaceId(): T_UUID {
+    return this.spaceId;
+  }
+  getRole(): string {
+    throw new Error('Method not implemented.');
+  }
+  getPermission(): 'admin' | 'member' {
+    throw new Error('Method not implemented.');
+  }
+  setTobeRemove(): boolean {
+    return true;
+  }
+}
+
+class MockSpaceMember implements ISpaceMember {
+  userId: T_UUID;
+  spaceId: T_UUID;
+  constructor(userId: T_UUID, spaceId: T_UUID) {
+    this.userId = userId;
+    this.spaceId = spaceId;
+  }
+  changeRole(
+    requesterId: T_UUID,
+    ownerMember: ISpaceMember,
+    role: ISpaceRole,
+  ): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getUserId(): T_UUID {
+    return this.userId;
+  }
+  setUserId(userId: T_UUID): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getRoleId(): T_UUID {
+    throw new Error('Method not implemented.');
+  }
+  setRoleId(roleId: T_UUID): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getSpaceId(): T_UUID {
+    return this.spaceId;
+  }
+}

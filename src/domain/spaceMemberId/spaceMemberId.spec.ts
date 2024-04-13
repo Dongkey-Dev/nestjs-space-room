@@ -51,6 +51,9 @@ class MockSpaceRole implements ISpaceRole {
     this.id = id;
     this.permission = permission;
   }
+  setTobeRemove(): boolean {
+    throw new Error('Method not implemented.');
+  }
   getId(): T_UUID {
     return this.id;
   }
@@ -60,7 +63,7 @@ class MockSpaceRole implements ISpaceRole {
   getRole(): string {
     throw new Error('Method not implemented.');
   }
-  getPermission(): 'owner' | 'admin' | 'member' {
+  getPermission(): 'admin' | 'member' {
     return this.permission;
   }
 }
@@ -70,28 +73,17 @@ describe('SpaceMemberId', () => {
   let spaceMember: ISpaceMember;
   let adminSpaceRole: ISpaceRole;
 
-  let ownerSpaceRole: ISpaceRole;
-  let ownerSpaceMember: ISpaceMember;
-
   let memberSpaceRole: ISpaceRole;
   let memberSpaceMember: ISpaceMember;
 
   const spaceId = new T_UUID();
   const userId = new T_UUID();
   const adminPermission = 'admin';
-  const onwerPermission = 'owner';
   const memberPermission = 'member';
   beforeEach(() => {
     adminSpaceRole = new MockSpaceRole(spaceId, new T_UUID(), adminPermission);
     spaceMember = new MockSpaceMember(spaceId, userId, adminSpaceRole.getId());
     adminSpaceMemberId = new SpaceMemberID(spaceMember, adminSpaceRole);
-
-    ownerSpaceRole = new MockSpaceRole(spaceId, new T_UUID(), onwerPermission);
-    ownerSpaceMember = new MockSpaceMember(
-      spaceId,
-      userId,
-      ownerSpaceRole.getId(),
-    );
 
     memberSpaceRole = new MockSpaceRole(
       spaceId,
@@ -113,48 +105,12 @@ describe('SpaceMemberId', () => {
     expect(adminSpaceMemberId.getUserId()).toEqual(userId);
   });
 
-  it('관리자의 소유자 확인', () => {
-    expect(adminSpaceMemberId.isOwner(spaceId)).toBeFalsy();
-  });
-
   it('관리자의 관리자 확인', () => {
     expect(adminSpaceMemberId.isAdmin(spaceId)).toBeTruthy();
   });
 
   it('관리자의 멤버 확인', () => {
     expect(adminSpaceMemberId.isMember(spaceId)).toBeTruthy();
-  });
-
-  it('소유자의 소유자 확인', () => {
-    const ownerSpaceMemberId = new SpaceMemberID(
-      ownerSpaceMember,
-      ownerSpaceRole,
-    );
-    expect(ownerSpaceMemberId.isOwner(spaceId)).toBeTruthy();
-  });
-
-  it('소유자의 관리자 확인', () => {
-    const ownerSpaceMemberId = new SpaceMemberID(
-      ownerSpaceMember,
-      ownerSpaceRole,
-    );
-    expect(ownerSpaceMemberId.isAdmin(spaceId)).toBeTruthy();
-  });
-
-  it('소유자의 멤버 확인', () => {
-    const ownerSpaceMemberId = new SpaceMemberID(
-      ownerSpaceMember,
-      ownerSpaceRole,
-    );
-    expect(ownerSpaceMemberId.isMember(spaceId)).toBeTruthy();
-  });
-
-  it('멤버의 소유자 확인', () => {
-    const memberSpaceMemberId = new SpaceMemberID(
-      memberSpaceMember,
-      memberSpaceRole,
-    );
-    expect(memberSpaceMemberId.isOwner(spaceId)).toBeFalsy();
   });
 
   it('멤버의 관리자 확인', () => {

@@ -39,7 +39,7 @@ export const changeOwnerSchema = z.object({
 
 export interface SpaceUsecase {
   create(
-    userUuid: T_UUID,
+    ownerUuid: T_UUID,
     dto: z.infer<typeof createSpaceSchema>,
   ): Promise<ISpace>;
   join(

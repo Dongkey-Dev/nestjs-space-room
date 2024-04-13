@@ -3,6 +3,9 @@ import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 import { SpaceMember } from './spaceMember';
 
 class MockSpaceRole implements ISpaceRole {
+  setTobeRemove(): boolean {
+    throw new Error('Method not implemented.');
+  }
   getSpaceId(): T_UUID {
     throw new Error('Method not implemented.');
   }
@@ -20,10 +23,10 @@ class MockSpaceRole implements ISpaceRole {
   setRole(role: string): boolean {
     throw new Error('Method not implemented.');
   }
-  getPermission(): 'owner' | 'admin' | 'member' {
+  getPermission(): 'admin' | 'member' {
     throw new Error('Method not implemented.');
   }
-  setPermission(permission: 'owner' | 'admin' | 'member'): boolean {
+  setPermission(permission: 'admin' | 'member'): boolean {
     throw new Error('Method not implemented.');
   }
 }
