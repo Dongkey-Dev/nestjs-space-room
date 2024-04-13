@@ -9,7 +9,23 @@ export const spaceMemberSchema = z.object({
   roleId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
 });
 
+export const spaceMemberPersistenceSchema = z.object({
+  id: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+  spaceId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+  userId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+  roleId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+});
+
 export interface ISpaceMember {
+  getId(): T_UUID;
   getUserId(): T_UUID;
   setUserId(userId: T_UUID): boolean;
   getRoleId(): T_UUID;
@@ -21,4 +37,6 @@ export interface ISpaceMember {
     ownerMember: ISpaceMember,
     role: ISpaceRole,
   ): boolean;
+
+  exportSpaceMemberData(): z.infer<typeof spaceMemberPersistenceSchema>;
 }

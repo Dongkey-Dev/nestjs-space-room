@@ -34,12 +34,17 @@ export class SpaceRepository implements ISpaceRepository {
       });
     if (!spaceEntity) throw new Error('Space not found');
 
-    await this.dataSource
+    return await this.dataSource
       .getRepository(UserRoleEntity)
-      .softRemove({ spaceId: id.exportBuffer() });
+      .softRemove({ spaceId: id.exportBuffer() })
+      .then(() => {
+        return true;
+      })
+      .catch(() => {
+        return false;
+      });
 
     //TODO: spaceRole에 대해서도 softRemove 필요
-    return true;
   }
 
   async saveSpace(space: ISpace): Promise<boolean> {

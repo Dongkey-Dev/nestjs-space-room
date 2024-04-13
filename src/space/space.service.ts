@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SpaceUsecase } from './space.usecase';
 import { ISpace } from 'src/domain/space/space.interface';
 import { ISpaceMemberID } from 'src/domain/spaceMemberID/spaceMemberID.interface';
 import { T_UUID } from 'src/util/uuid';
+import { ISpaceManager } from 'src/domain/space/space.manager.interface';
 @Injectable()
 export class SpaceSerivce implements SpaceUsecase {
-  constructor() {}
+  constructor(
+    @Inject('ISpaceManager')
+    private readonly spaceManager: ISpaceManager,
+  ) {}
   create(
     ownerUuid: T_UUID,
     dto: z.infer<typeof createSpaceSchema>,

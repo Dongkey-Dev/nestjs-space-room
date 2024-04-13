@@ -13,6 +13,14 @@ class MockSpaceMember implements ISpaceMember {
     this.userId = userId;
     this.roleId = roleId;
   }
+  exportSpaceMemberData(): {
+    id?: Buffer;
+    spaceId?: Buffer;
+    userId?: Buffer;
+    roleId?: Buffer;
+  } {
+    throw new Error('Method not implemented.');
+  }
   getUserId(): T_UUID {
     return this.userId;
   }

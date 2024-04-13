@@ -1,6 +1,10 @@
 import { T_UUID } from 'src/util/uuid';
 import { BaseDomain } from '../base/baseDomain';
-import { ISpaceMember, spaceMemberSchema } from './spaceMember.interface';
+import {
+  ISpaceMember,
+  spaceMemberPersistenceSchema,
+  spaceMemberSchema,
+} from './spaceMember.interface';
 import { z } from 'zod';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 
@@ -12,10 +16,16 @@ export class SpaceMember
   spaceId: T_UUID;
   userId: T_UUID;
   roleId: T_UUID;
-  constructor(data?: z.infer<typeof spaceMemberSchema>) {
+  constructor(data?: z.input<typeof spaceMemberSchema>) {
     super(spaceMemberSchema);
     if (data) this.import(data);
     if (!this.id) this.id = new T_UUID();
+  }
+  getId(): T_UUID {
+    return this.id;
+  }
+  exportSpaceMemberData(): z.infer<typeof spaceMemberPersistenceSchema> {
+    return this.exportPersistence();
   }
   getUserId(): T_UUID {
     if (!this.userId) throw new Error('User id is not set');

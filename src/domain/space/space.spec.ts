@@ -113,6 +113,14 @@ class MockSpaceMember implements ISpaceMember {
     this.userId = userId;
     this.spaceId = spaceId;
   }
+  exportSpaceMemberData(): {
+    id?: Buffer;
+    spaceId?: Buffer;
+    userId?: Buffer;
+    roleId?: Buffer;
+  } {
+    throw new Error('Method not implemented.');
+  }
   changeRole(
     requesterId: T_UUID,
     ownerMember: ISpaceMember,

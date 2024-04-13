@@ -4,7 +4,7 @@ import { ISpaceMember } from './spaceMember.interface';
 
 export interface ISpaceMemberManager {
   createMember(space: ISpace): ISpaceMember;
-  getMembers(space: ISpace): ISpaceMember[];
-  getMembers(user: IUser): ISpaceMember[];
+  getMembersBySpace(space: ISpace): ISpaceMember[];
+  getMembersByUser(user: IUser): ISpaceMember[];
   applyMember(member: ISpaceMember): boolean;
 }
