@@ -5,10 +5,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { UserRoleEntity } from './userRole.entity';
 
 @Entity('space')
 export class SpaceEntity {
@@ -27,6 +29,9 @@ export class SpaceEntity {
   @ManyToOne(() => UserEntity, { nullable: false })
   @JoinColumn({ name: 'owner_id' })
   owner: UserEntity;
+
+  @OneToMany(() => UserRoleEntity, (userRole) => userRole.space)
+  userRoles: UserRoleEntity[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

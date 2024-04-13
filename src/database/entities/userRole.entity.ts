@@ -28,7 +28,7 @@ export class UserRoleEntity {
   @Column({ type: 'binary', length: 16, name: 'space_id' })
   spaceId: Buffer;
 
-  @ManyToOne(() => SpaceEntity, { nullable: true })
+  @ManyToOne(() => SpaceEntity, (space) => space.id)
   space: SpaceEntity;
 
   @Index()
