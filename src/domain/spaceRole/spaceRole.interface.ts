@@ -46,6 +46,8 @@ export interface ISpaceRole {
   getRole(): string;
   setRole(roleName: string): void;
 
+  getName(): string;
+
   getPermission(): z.infer<typeof permissionEnum>;
   setPermission(permission: z.infer<typeof permissionEnum>): void;
 

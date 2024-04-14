@@ -25,7 +25,6 @@ export const spaceMemberPersistenceSchema = z.object({
 });
 
 export interface ISpaceMember {
-  isJoined(): boolean;
   getId(): T_UUID;
 
   getUserId(): T_UUID;

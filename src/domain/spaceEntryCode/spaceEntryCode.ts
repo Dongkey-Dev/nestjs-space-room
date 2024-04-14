@@ -3,6 +3,7 @@ import { BaseDomain } from '../base/baseDomain';
 import { z } from 'zod';
 import {
   ISpaceEntryCode,
+  exportSpaceEntryCodeSchema,
   spaceEntryCodePersistenceSchema,
   spaceEntryCodeSchema,
 } from './spaceEntryCode.interface';
@@ -28,6 +29,15 @@ export class SpaceEntryCode
     if (!data.id) data.id = new T_UUID();
     if (!data.code) data.code = this.generateCode();
     this.import(data);
+  }
+  exportCode(role: ISpaceRole): z.output<typeof exportSpaceEntryCodeSchema> {
+    if (!this.roleId.isEqual(role.getId()))
+      throw new Error('Role is not matched');
+    return exportSpaceEntryCodeSchema.parse({
+      code: this.code,
+      roleName: role.getName(),
+      permission: role.getPermission(),
+    });
   }
   isTobeRemove(): boolean {
     if (this.changes.exportToBeRemoved()) return true;

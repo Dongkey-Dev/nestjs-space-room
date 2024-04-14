@@ -18,6 +18,9 @@ export class SpaceRoleManager
   ) {
     super(SpaceRole);
   }
+  getRole(roleId: T_UUID): Promise<ISpaceRole> {
+    return this.getDomain(roleId);
+  }
   createRole(
     spaceId: T_UUID,
     roleName: string,

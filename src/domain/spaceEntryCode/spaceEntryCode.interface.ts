@@ -23,9 +23,16 @@ export const spaceEntryCodePersistenceSchema = z.object({
     .transform((val) => new T_UUID(val).exportBuffer()),
 });
 
+export const exportSpaceEntryCodeSchema = z.object({
+  code: z.string().length(8),
+  roleName: z.string(),
+  permission: z.string(),
+});
+
 export interface ISpaceEntryCode {
   isTobeRemove(): boolean;
   exportPersistenceData(): z.output<typeof spaceEntryCodePersistenceSchema>;
+  exportCode(role: ISpaceRole): z.output<typeof spaceEntryCodeSchema>;
 
   getId(): T_UUID;
 

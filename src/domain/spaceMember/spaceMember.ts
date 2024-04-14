@@ -21,10 +21,6 @@ export class SpaceMember
     if (data) this.import(data);
     if (!this.id) this.id = new T_UUID();
   }
-  isJoined(): boolean {
-    if (this.spaceId && this.roleId) return true;
-    return false;
-  }
   getId(): T_UUID {
     return this.id;
   }

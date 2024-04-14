@@ -17,7 +17,7 @@ export interface ISpaceRoleManager {
     permission: z.infer<typeof permissionEnum>,
   ): ISpaceRole;
   applyRole(role: ISpaceRole): Promise<boolean>;
-  // getRole(user: IUser): Promise<ISpaceRole>;
+  getRole(roleId: T_UUID): Promise<ISpaceRole>;
 
   getRolesBySpace(space: ISpace): Promise<ISpaceRole[]>;
   createRoles(roles: ISpaceRole[]): Promise<boolean>;

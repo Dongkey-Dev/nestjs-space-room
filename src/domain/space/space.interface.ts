@@ -27,6 +27,8 @@ export const spacePersistenceSchema = z.object({
 export interface ISpace {
   getId(): T_UUID;
 
+  setTobeRemove(requeser: T_UUID): void;
+
   getName(): string;
   setName(name: string): void;
   changeName(name: string, ownerMember: ISpaceMember): boolean;

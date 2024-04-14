@@ -5,10 +5,7 @@ import { ISpace, spacePersistenceSchema, spaceSchema } from './space.interface';
 import { ISpaceMember } from '../spaceMember/spaceMember.interface';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 
-export class Space
-  extends BaseDomain<typeof spaceSchema>
-  implements BaseDomain<typeof spaceSchema>, ISpace
-{
+export class Space extends BaseDomain<typeof spaceSchema> implements ISpace {
   private id: T_UUID;
   private name: string;
   private logo: string;
@@ -20,6 +17,13 @@ export class Space
     super(spaceSchema);
     if (!data.id) data.id = new T_UUID();
     this.import(data);
+  }
+  setTobeRemove(requeser: T_UUID): void {
+    if (!this.createdAt) throw new Error('Wrong space');
+    if (this.ownerId.isEqual(requeser)) {
+      this.changes.setToBeRemoved({ id: this.id });
+    }
+    throw new Error('Only owner can remove space');
   }
   setName(name: string): void {
     if (this.name) throw new Error('Name is already set');

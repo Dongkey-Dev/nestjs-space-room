@@ -21,6 +21,10 @@ export class SpaceRole
     if (!data.id) data.id = new T_UUID();
     this.import(data);
   }
+  getName(): string {
+    if (!this.roleName) throw new Error('Role name is not set');
+    return this.roleName;
+  }
   isTobeRemove(): boolean {
     return this.changes.exportToBeRemoved() ? true : false;
   }
