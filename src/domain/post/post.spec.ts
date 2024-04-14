@@ -39,6 +39,27 @@ class MockPost implements IPost {
     this.totalComments = totalComments;
     this.totalParticipants = totalParticipants;
   }
+  exportResponseData(memberId: ISpaceMemberID): {
+    id?: T_UUID;
+    type?: string;
+    spaceId?: T_UUID;
+    isAnonymous?: boolean;
+    title?: string;
+    content?: string;
+    authorLastName?: string;
+    authorFirstName?: string;
+    authorProfileImage?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+  } {
+    throw new Error('Method not implemented.');
+  }
+  changeTitle(requester: T_UUID, title: string): boolean {
+    throw new Error('Method not implemented.');
+  }
+  changeContent(requester: T_UUID, content: string): boolean {
+    throw new Error('Method not implemented.');
+  }
   exportPostData(): {
     id?: Buffer;
     type?: string;

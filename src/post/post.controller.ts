@@ -15,8 +15,11 @@ import { T_UUID } from 'src/util/uuid';
 import { AuthUser, UserFromToken } from 'src/common/auth.decorator';
 import {
   PostUsecase,
+  createChatSchema,
   createPostSchema,
+  deleteChatSchema,
   deletePostSchema,
+  updateChatSchema,
   updatePostSchema,
 } from './post.usecase';
 import { createZodDto } from '@anatine/zod-nestjs';
@@ -24,6 +27,10 @@ import { createZodDto } from '@anatine/zod-nestjs';
 class CreatePostSchema extends createZodDto(createPostSchema) {}
 class UpdatePostSchema extends createZodDto(updatePostSchema) {}
 class DeletePostSchema extends createZodDto(deletePostSchema) {}
+
+class CreateChatSchema extends createZodDto(createChatSchema) {}
+class UpdateChatSchema extends createZodDto(updateChatSchema) {}
+class DeleteChatSchema extends createZodDto(deleteChatSchema) {}
 
 @Controller('post')
 export class PostController {
@@ -83,6 +90,36 @@ export class PostController {
     return await this.postUsecase.deletePost(
       new T_UUID(user.id),
       new T_UUID(dto.postId),
+    );
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('chat')
+  async createChat(
+    @Body() dto: CreateChatSchema,
+    @AuthUser() user: UserFromToken,
+  ) {
+    return await this.postUsecase.createChat(new T_UUID(user.id), dto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('chat')
+  async updateChat(
+    @Body() dto: UpdateChatSchema,
+    @AuthUser() user: UserFromToken,
+  ) {
+    return await this.postUsecase.updateChat(new T_UUID(user.id), dto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('chat')
+  async deleteChat(
+    @Body() dto: DeleteChatSchema,
+    @AuthUser() user: UserFromToken,
+  ) {
+    return await this.postUsecase.deleteChat(
+      new T_UUID(user.id),
+      new T_UUID(dto.chatId),
     );
   }
 }

@@ -26,8 +26,14 @@ export class ChatManager extends DomainManager<Chat> implements IChatManager {
   ): Promise<Chat> {
     return (await this.chatRepository.findChat(entityKey)) as Chat;
   }
-  createChat(writer: IUser, content: string, isAnonymous?: boolean): IChat {
+  createChat(
+    writer: IUser,
+    postId: T_UUID,
+    content: string,
+    isAnonymous?: boolean,
+  ): IChat {
     const chat = new Chat();
+    chat.setPostId(postId);
     chat.setAuthor(writer);
     chat.setContent(content);
     if (isAnonymous) chat.setAnonymous();

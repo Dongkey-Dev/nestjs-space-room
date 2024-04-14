@@ -162,4 +162,12 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
   setAnonymous(): void {
     this.isAnonymous = true;
   }
+
+  setPostId(postId: T_UUID): void {
+    this.postId = postId;
+  }
+
+  getSpaceId(): T_UUID {
+    return this.spaceId;
+  }
 }

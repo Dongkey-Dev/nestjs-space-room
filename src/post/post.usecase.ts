@@ -23,10 +23,30 @@ export const deletePostSchema = z.object({
   postId: z.string(),
 });
 
+export const createChatSchema = z.object({
+  postId: z.string(),
+  content: z.string(),
+  previousChatId: z.string().optional(),
+  isAnonymous: z.boolean(),
+});
+
+export const updateChatSchema = z.object({
+  chatId: z.string(),
+  content: z.string(),
+});
+
+export const deleteChatSchema = z.object({
+  chatId: z.string(),
+});
+
 export interface PostUsecase {
   getPostAll(requester: T_UUID, spaceId: T_UUID);
   getPost(requester: T_UUID, postId: T_UUID);
   createPost(requester: T_UUID, dto: z.infer<typeof createPostSchema>);
   updatePost(requester: T_UUID, dto: z.infer<typeof updatePostSchema>);
   deletePost(requester: T_UUID, postId: T_UUID);
+
+  createChat(requester: T_UUID, dto: z.infer<typeof createChatSchema>);
+  updateChat(requester: T_UUID, dto: z.infer<typeof updateChatSchema>);
+  deleteChat(requester: T_UUID, chatId: T_UUID);
 }

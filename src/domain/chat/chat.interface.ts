@@ -86,7 +86,10 @@ export interface IChat {
   getContent(memberID: ISpaceMemberID);
   setAuthor(user: IUser): boolean;
   setReply(chat: IChat): void;
+
+  setPostId(postId: T_UUID): void;
   getPostId(): T_UUID;
   writeReply(memberID: ISpaceMemberID, chat: IChat): boolean;
   deleteChat(memberID: ISpaceMemberID): boolean;
+  getSpaceId(): T_UUID;
 }

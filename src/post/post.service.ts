@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ISpaceManager } from 'src/domain/space/space.manager.interface';
 import { ISpaceMemberManager } from 'src/domain/spaceMember/spaceMember.manager.interface';
 import { ISpaceRoleManager } from 'src/domain/spaceRole/spaceRole.manager.interface';
-import { ISpaceEntryCodeManager } from 'src/domain/spaceEntryCode/spaceEntryCode.manager.interface';
 import { IUserManager } from 'src/domain/user/user.manager.interface';
 import { T_UUID } from 'src/util/uuid';
 import { PostUsecase } from './post.usecase';
@@ -20,8 +19,6 @@ export class PostSerivce implements PostUsecase {
     private readonly spaceMemberManager: ISpaceMemberManager,
     @Inject('ISpaceRoleManager')
     private readonly spaceRoleManager: ISpaceRoleManager,
-    @Inject('ISpaceEntryCodeManager')
-    private readonly spaceEntryCodeManager: ISpaceEntryCodeManager,
     @Inject('IPostManager')
     private readonly postManager: IPostManager,
     @Inject('IChatManager')
@@ -109,5 +106,68 @@ export class PostSerivce implements PostUsecase {
     const memberId = new SpaceMemberID(member, role);
     post.setTobeRemove(memberId);
     await this.postManager.deletePost(post);
+  }
+
+  async createChat(
+    requester: T_UUID,
+    dto: {
+      postId?: string;
+      content?: string;
+      previousChatId?: string;
+      isAnonymous?: boolean;
+    },
+  ) {
+    const user = await this.userManager.getDomain(requester);
+    const postId = new T_UUID(dto.postId);
+    const post = await this.postManager.getPost(postId);
+    const previousChatId = new T_UUID(dto.previousChatId);
+    const previousChat = await this.chatManager.getChat(previousChatId);
+    const member = await this.spaceMemberManager.getMemberByUserAndSpace(
+      user,
+      post.getSpaceId(),
+    );
+    const role = await this.spaceRoleManager.getRole(member.getRoleId());
+    const memberID = new SpaceMemberID(member, role);
+    const newChat = this.chatManager.createChat(
+      user,
+      postId,
+      dto.content,
+      dto.isAnonymous,
+    );
+    if (previousChatId) {
+      newChat.writeReply(memberID, previousChat);
+    }
+    await this.chatManager.applyChat(newChat);
+    return newChat.exportResponseData(memberID);
+  }
+
+  async updateChat(
+    requester: T_UUID,
+    dto: { chatId?: string; content?: string },
+  ) {
+    const user = await this.userManager.getDomain(requester);
+    const chatId = new T_UUID(dto.chatId);
+    const chat = await this.chatManager.getChat(chatId);
+
+    const member = await this.spaceMemberManager.getMemberByUserAndSpace(
+      user,
+      chat.getSpaceId(),
+    );
+    const role = await this.spaceRoleManager.getRole(member.getRoleId());
+    const memberId = new SpaceMemberID(member, role);
+    chat.changeContent(memberId, dto.content);
+    await this.chatManager.applyChat(chat);
+  }
+  async deleteChat(requester: T_UUID, chatId: T_UUID) {
+    const user = await this.userManager.getDomain(requester);
+    const chat = await this.chatManager.getChat(chatId);
+    const member = await this.spaceMemberManager.getMemberByUserAndSpace(
+      user,
+      chat.getSpaceId(),
+    );
+    const role = await this.spaceRoleManager.getRole(member.getRoleId());
+    const memberId = new SpaceMemberID(member, role);
+    chat.setTobeRemove(memberId);
+    await this.chatManager.applyChat(chat);
   }
 }
