@@ -3,6 +3,7 @@ import { BaseDomain } from '../base/baseDomain';
 import { z } from 'zod';
 import {
   ISpaceEntryCode,
+  spaceEntryCodePersistenceSchema,
   spaceEntryCodeSchema,
 } from './spaceEntryCode.interface';
 import { ISpace } from '../space/space.interface';
@@ -27,6 +28,13 @@ export class SpaceEntryCode
     if (!data.id) data.id = new T_UUID();
     if (!data.code) data.code = this.generateCode();
     this.import(data);
+  }
+  isTobeRemove(): boolean {
+    if (this.changes.exportToBeRemoved()) return true;
+    return false;
+  }
+  exportPersistenceData(): z.output<typeof spaceEntryCodePersistenceSchema> {
+    return spaceEntryCodePersistenceSchema.parse(this.exportPersistence());
   }
   getId(): T_UUID {
     return this.id;

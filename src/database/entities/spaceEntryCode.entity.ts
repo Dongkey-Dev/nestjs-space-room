@@ -13,7 +13,7 @@ import { SpaceEntity } from './space.entity';
 import { SpaceRoleEntity } from './spaceRole.entity';
 
 @Entity('space_entry_code')
-export class UserEntity {
+export class SpaceEntryCodeEntity {
   @PrimaryColumn({ type: 'binary', length: 16, generated: false })
   id: Buffer;
 
