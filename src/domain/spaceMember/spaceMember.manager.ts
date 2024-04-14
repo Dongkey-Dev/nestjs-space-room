@@ -4,19 +4,30 @@ import { ISpaceMemberManager } from './spaceMember.manager.interface';
 import { ISpaceMember } from './spaceMember.interface';
 import { ISpace } from '../space/space.interface';
 import { IUser } from '../user/user.interface';
+import { Inject } from '@nestjs/common';
+import { ISpaceMemberRepository } from './spaceMember.repository';
 
 export class SpaceMemberManager
   extends DomainManager<SpaceMember>
   implements ISpaceMemberManager
 {
-  getMembersBySpace(space: ISpace): ISpaceMember[] {
-    throw new Error('Method not implemented.');
+  constructor(
+    @Inject('ISpaceMemberRepository')
+    private readonly spaceMemberRepository: ISpaceMemberRepository,
+  ) {
+    super(SpaceMember);
   }
-  getMembersByUser(user: IUser): ISpaceMember[] {
-    throw new Error('Method not implemented.');
+
+  getMembersBySpace(space: ISpace): Promise<ISpaceMember[]> {
+    return this.spaceMemberRepository.findMemberListBySpace(space.getId());
   }
-  protected sendToDatabase(toDomain: SpaceMember): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  getMembersByUser(user: IUser): Promise<ISpaceMember[]> {
+    return this.spaceMemberRepository.findMemberListByUser(user.getId());
+  }
+  protected async sendToDatabase(toDomain: SpaceMember): Promise<boolean> {
+    const result = await this.spaceMemberRepository.saveMember(toDomain);
+    if (!result) throw new Error('Failed to save space member');
+    return true;
   }
   protected getFromDatabase(
     entityKey: any,
@@ -24,13 +35,10 @@ export class SpaceMemberManager
   ): Promise<SpaceMember> {
     throw new Error('Method not implemented.');
   }
-  protected getListFromDatabase(entityKey: any, condition?: any) {
-    throw new Error('Method not implemented.');
+  async applyMember(member: ISpaceMember): Promise<boolean> {
+    return await this.sendToDatabase(member as SpaceMember);
   }
-  applyMember(member: ISpaceMember): boolean {
-    throw new Error('Method not implemented.');
-  }
-  createMember(space: ISpace): ISpaceMember {
-    throw new Error('Method not implemented.');
+  createMember(): ISpaceMember {
+    return new SpaceMember();
   }
 }

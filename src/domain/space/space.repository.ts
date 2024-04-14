@@ -34,7 +34,7 @@ export class SpaceRepository implements ISpaceRepository {
       });
     if (!spaceEntity) throw new Error('Space not found');
 
-    return await this.dataSource
+    return this.dataSource
       .getRepository(UserRoleEntity)
       .softRemove({ spaceId: id.exportBuffer() })
       .then(() => {

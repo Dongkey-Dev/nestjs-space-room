@@ -1,32 +1,58 @@
+import { Inject } from '@nestjs/common';
 import { DomainManager } from '../base/domainManager';
-import { IUser } from '../user/user.interface';
 import { SpaceRole } from './spaceRole';
-import { ISpaceRole } from './spaceRole.interface';
+import { ISpaceRole, permissionEnum } from './spaceRole.interface';
 import { ISpaceRoleManager } from './spaceRole.manager.interface';
+import { ISpaceRoleRepository } from './spaceRole.repository';
+import { ISpace } from '../space/space.interface';
+import { T_UUID } from 'src/util/uuid';
+import { z } from 'zod';
 
 export class SpaceRoleManager
   extends DomainManager<SpaceRole>
   implements ISpaceRoleManager
 {
-  createRole(roleName: string, permission: 'admin' | 'user'): ISpaceRole {
-    throw new Error('Method not implemented.');
+  constructor(
+    @Inject('ISpaceRoleRepository')
+    private readonly spaceRoleRepository: ISpaceRoleRepository,
+  ) {
+    super(SpaceRole);
   }
-  applyRole(role: ISpaceRole): boolean {
-    throw new Error('Method not implemented.');
+  createRole(
+    spaceId: T_UUID,
+    roleName: string,
+    permission: z.infer<typeof permissionEnum>,
+  ): ISpaceRole {
+    return this.createDomain({
+      spaceId,
+      roleName,
+      permission,
+    });
   }
-  getRole(user: IUser): ISpaceRole {
-    throw new Error('Method not implemented.');
+  createRoles(roles: ISpaceRole[]): Promise<boolean> {
+    return this.spaceRoleRepository.bulkSaveRole(roles);
   }
-  protected sendToDatabase(toDomain: SpaceRole): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  getRolesBySpace(space: ISpace): Promise<ISpaceRole[]> {
+    return this.spaceRoleRepository.findRolesBySpace(space);
+  }
+
+  async applyRole(role: ISpaceRole): Promise<boolean> {
+    const result = this.sendToDatabase(role as SpaceRole);
+    if (!result) throw new Error('Failed to save space role');
+    return true;
+  }
+  protected async sendToDatabase(toDomain: SpaceRole): Promise<boolean> {
+    let result: boolean;
+    if (toDomain.isTobeRemove())
+      result = await this.spaceRoleRepository.deleteRole(toDomain);
+    result = await this.spaceRoleRepository.saveRole(toDomain);
+    if (!result) throw new Error('Failed to apply space role');
+    return true;
   }
   protected getFromDatabase(
     entityKey: any,
     condition?: any,
   ): Promise<SpaceRole> {
-    throw new Error('Method not implemented.');
-  }
-  protected getListFromDatabase(entityKey: any, condition?: any) {
-    throw new Error('Method not implemented.');
+    return this.spaceRoleRepository.findRole(entityKey) as Promise<SpaceRole>;
   }
 }

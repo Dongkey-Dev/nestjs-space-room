@@ -26,10 +26,14 @@ export const spacePersistenceSchema = z.object({
 
 export interface ISpace {
   getId(): T_UUID;
+
   getName(): string;
+  setName(name: string): void;
   changeName(name: string, ownerMember: ISpaceMember): boolean;
+
   getLogo(): string;
   changeLogo(logo: string, ownerMember: ISpaceMember): boolean;
+  setLogo(logo: string): void;
 
   getOwnerId(): T_UUID;
   changeOwner(

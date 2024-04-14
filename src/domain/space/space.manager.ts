@@ -17,6 +17,13 @@ export class SpaceManager
   ) {
     super(Space);
   }
+  createSpace(name: string, logo: string, ownerId: T_UUID): ISpace {
+    return this.createDomain({
+      name,
+      logo,
+      ownerId,
+    });
+  }
 
   protected sendToDatabase(toDomain: ISpace): Promise<boolean> {
     const res = this.spaceRepository.saveSpace(toDomain);
@@ -31,9 +38,6 @@ export class SpaceManager
   }
   protected getListFromDatabase(entityKey: any, condition?: any) {
     throw new Error('Method not implemented.');
-  }
-  createSpace(): Space {
-    return new Space();
   }
   async getSpace(id: T_UUID): Promise<ISpace> {
     return await this.getFromDatabase(id);

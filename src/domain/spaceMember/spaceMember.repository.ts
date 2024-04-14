@@ -9,12 +9,25 @@ export interface ISpaceMemberRepository {
   saveMember(member: ISpaceMember): Promise<boolean>;
   findMemberListByUser(user: T_UUID): Promise<ISpaceMember[]>;
   findMemberListBySpace(space: T_UUID): Promise<ISpaceMember[]>;
+  findUserMember(user: T_UUID, space: T_UUID): Promise<ISpaceMember>;
   deleteMember(member: ISpaceMember): Promise<boolean>;
 }
 
 //UserRole
 export class SpaceMemberRepository implements ISpaceMemberRepository {
   constructor(@Inject('DATA_SOURCE') private readonly dataSource: DataSource) {}
+
+  async findUserMember(user: T_UUID, space: T_UUID): Promise<ISpaceMember> {
+    return this.dataSource
+      .getRepository(UserRoleEntity)
+      .findOne({
+        where: { userId: user.exportBuffer(), spaceId: space.exportBuffer() },
+      })
+      .then((member) => {
+        return this.entityToDomain(member);
+      });
+  }
+
   async saveMember(member: ISpaceMember): Promise<boolean> {
     const memberEntity = this.dataSource
       .getRepository(UserRoleEntity)

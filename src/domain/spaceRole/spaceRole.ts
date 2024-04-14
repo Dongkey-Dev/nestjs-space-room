@@ -3,6 +3,7 @@ import { BaseDomain } from '../base/baseDomain';
 import {
   ISpaceRole,
   permissionEnum,
+  spaceRolePersistenceSchema,
   spaceRoleSchema,
 } from './spaceRole.interface';
 import { z } from 'zod';
@@ -15,10 +16,25 @@ export class SpaceRole
   private spaceId: T_UUID;
   private roleName: string;
   private permission: z.infer<typeof permissionEnum>;
-  constructor(data: z.infer<typeof spaceRoleSchema>) {
+  constructor(data?: z.infer<typeof spaceRoleSchema>) {
     super(spaceRoleSchema);
+    if (!data.id) data.id = new T_UUID();
     this.import(data);
-    if (!this.id) this.id = new T_UUID();
+  }
+  isTobeRemove(): boolean {
+    return this.changes.exportToBeRemoved() ? true : false;
+  }
+  setSpaceId(spaceId: T_UUID): void {
+    this.spaceId = spaceId;
+  }
+  setRole(roleName: string): void {
+    this.roleName = roleName;
+  }
+  setPermission(permission: z.infer<typeof permissionEnum>): void {
+    this.permission = permission;
+  }
+  exportSpaceRoleData(): z.output<typeof spaceRolePersistenceSchema> {
+    return spaceRolePersistenceSchema.parse(this.exportJson());
   }
   setTobeRemove(): boolean {
     this.changes.setToBeRemoved({ id: this.id });

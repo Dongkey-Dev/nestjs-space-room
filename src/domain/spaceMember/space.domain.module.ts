@@ -15,4 +15,4 @@ import { SpaceMemberManager } from './spaceMember.manager';
   ],
   exports: ['ISpaceMemberManager', 'ISpaceMemberRepository'],
 })
-export class SpaceDomainModule {}
+export class SpaceMemberDomainModule {}
