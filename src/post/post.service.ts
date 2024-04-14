@@ -137,7 +137,16 @@ export class PostSerivce implements PostUsecase {
     if (previousChatId) {
       newChat.writeReply(memberID, previousChat);
     }
+    post.setTotalChats(post.getTotalChats() + 1);
+    const chats = await this.chatManager.getChats(post);
+    const totalParticipants = new Set();
+    chats.forEach((chat) => {
+      totalParticipants.add(chat.getAuthorId().exportString());
+    });
+    totalParticipants.add(post.getAuthorId().exportString());
+    post.setTotalParticipants(totalParticipants.size);
     await this.chatManager.applyChat(newChat);
+    await this.postManager.updatePost(post);
     return newChat.exportResponseData(memberID);
   }
 
@@ -157,7 +166,9 @@ export class PostSerivce implements PostUsecase {
     const memberId = new SpaceMemberID(member, role);
     chat.changeContent(memberId, dto.content);
     await this.chatManager.applyChat(chat);
+    return true;
   }
+
   async deleteChat(requester: T_UUID, chatId: T_UUID) {
     const user = await this.userManager.getDomain(requester);
     const chat = await this.chatManager.getChat(chatId);
@@ -168,6 +179,14 @@ export class PostSerivce implements PostUsecase {
     const role = await this.spaceRoleManager.getRole(member.getRoleId());
     const memberId = new SpaceMemberID(member, role);
     chat.setTobeRemove(memberId);
+    const post = await this.postManager.getPost(chat.getPostId());
+    const chats = await this.chatManager.getChats(post);
+
+    if (chats.filter((c) => c.getAuthorId().isEqual(user.getId())).length === 1)
+      post.setTotalParticipants(post.getTotalParticipants() - 1);
+    post.setTotalChats(post.getTotalChats() - 1);
     await this.chatManager.applyChat(chat);
+    await this.postManager.updatePost(post);
+    return true;
   }
 }

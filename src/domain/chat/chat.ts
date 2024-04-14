@@ -134,6 +134,10 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
     return true;
   }
 
+  getAuthorId(): T_UUID {
+    return this.authorId;
+  }
+
   getContent(memberID: ISpaceMemberID) {
     const content = this.exportJson();
     delete content.author.email;

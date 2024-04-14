@@ -92,4 +92,5 @@ export interface IChat {
   writeReply(memberID: ISpaceMemberID, chat: IChat): boolean;
   deleteChat(memberID: ISpaceMemberID): boolean;
   getSpaceId(): T_UUID;
+  getAuthorId(): T_UUID;
 }
