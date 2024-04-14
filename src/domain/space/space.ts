@@ -18,8 +18,16 @@ export class Space
 
   constructor(data?: z.infer<typeof spaceSchema>) {
     super(spaceSchema);
+    if (!data.id) data.id = new T_UUID();
     this.import(data);
-    if (!this.id) this.id = new T_UUID();
+  }
+  setName(name: string): void {
+    if (this.name) throw new Error('Name is already set');
+    this.name = name;
+  }
+  setLogo(logo: string): void {
+    if (this.logo) throw new Error('Logo is already set');
+    this.logo = logo;
   }
   exportSpaceData(): z.infer<typeof spacePersistenceSchema> {
     return this.exportPersistence();

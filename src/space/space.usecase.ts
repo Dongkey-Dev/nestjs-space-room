@@ -48,10 +48,5 @@ export interface SpaceUsecase {
     roleName: string,
   ): Promise<ISpaceMemberID>;
   find(userUuid: T_UUID, spaceUuid: T_UUID): Promise<ISpace[]>;
-  updateUserRole(targetUserUuid: T_UUID, roleId: T_UUID): Promise<void>;
-  addRole(
-    spaceUuid: T_UUID,
-    roleList: z.infer<typeof roleSchema>,
-  ): Promise<void>;
-  removeRole(spaceUuid: T_UUID, roleId: T_UUID): Promise<void>;
+  delete(useruuid: T_UUID, spaceUuid: T_UUID): Promise<void>;
 }
