@@ -6,6 +6,7 @@ import { ISpace } from '../space/space.interface';
 import { IUser } from '../user/user.interface';
 import { Inject } from '@nestjs/common';
 import { ISpaceMemberRepository } from './spaceMember.repository';
+import { T_UUID } from 'src/util/uuid';
 
 export class SpaceMemberManager
   extends DomainManager<SpaceMember>
@@ -16,6 +17,9 @@ export class SpaceMemberManager
     private readonly spaceMemberRepository: ISpaceMemberRepository,
   ) {
     super(SpaceMember);
+  }
+  getMemberByUserAndSpace(user: IUser, spaceId: T_UUID): Promise<ISpaceMember> {
+    return this.spaceMemberRepository.findUserMember(user.getId(), spaceId);
   }
 
   getMembersBySpace(space: ISpace): Promise<ISpaceMember[]> {

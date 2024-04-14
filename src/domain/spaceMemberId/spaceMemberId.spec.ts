@@ -4,101 +4,6 @@ import { ISpaceRole, permissionEnum } from '../spaceRole/spaceRole.interface';
 import { z } from 'zod';
 import { SpaceMemberID } from './spaceMemberID';
 
-class MockSpaceMember implements ISpaceMember {
-  spaceId: T_UUID;
-  userId: T_UUID;
-  roleId: T_UUID;
-  constructor(spaceId: T_UUID, userId: T_UUID, roleId: T_UUID) {
-    this.spaceId = spaceId;
-    this.userId = userId;
-    this.roleId = roleId;
-  }
-  getId(): T_UUID {
-    throw new Error('Method not implemented.');
-  }
-  exportSpaceMemberData(): {
-    id?: Buffer;
-    spaceId?: Buffer;
-    userId?: Buffer;
-    roleId?: Buffer;
-  } {
-    throw new Error('Method not implemented.');
-  }
-  getUserId(): T_UUID {
-    return this.userId;
-  }
-  setUserId(userId: T_UUID): boolean {
-    throw new Error('Method not implemented.');
-  }
-  getRoleId(): T_UUID {
-    return this.roleId;
-  }
-  setRoleId(roleId: T_UUID): boolean {
-    throw new Error('Method not implemented.');
-  }
-  getSpaceId(): T_UUID {
-    return this.spaceId;
-  }
-  changeRole(
-    requesterId: T_UUID,
-    ownerMember: ISpaceMember,
-    role: ISpaceRole,
-  ): boolean {
-    throw new Error('Method not implemented.');
-  }
-}
-
-class MockSpaceRole implements ISpaceRole {
-  spaceId: T_UUID;
-  id: T_UUID;
-  permission: z.infer<typeof permissionEnum>;
-
-  constructor(
-    spaceId: T_UUID,
-    id: T_UUID,
-    permission: z.infer<typeof permissionEnum>,
-  ) {
-    this.spaceId = spaceId;
-    this.id = id;
-    this.permission = permission;
-  }
-  exportSpaceRoleData(): {
-    id: Buffer;
-    spaceId: Buffer;
-    name: string;
-    isAdmin: boolean;
-  } {
-    throw new Error('Method not implemented.');
-  }
-  isTobeRemove(): boolean {
-    throw new Error('Method not implemented.');
-  }
-  setSpaceId(spaceId: T_UUID): void {
-    throw new Error('Method not implemented.');
-  }
-  setRole(roleName: string): void {
-    throw new Error('Method not implemented.');
-  }
-  setPermission(permission: 'admin' | 'member'): void {
-    throw new Error('Method not implemented.');
-  }
-  setTobeRemove(): boolean {
-    throw new Error('Method not implemented.');
-  }
-  getId(): T_UUID {
-    return this.id;
-  }
-  getSpaceId(): T_UUID {
-    return this.spaceId;
-  }
-  getRole(): string {
-    throw new Error('Method not implemented.');
-  }
-  getPermission(): 'admin' | 'member' {
-    return this.permission;
-  }
-}
-
 describe('SpaceMemberId', () => {
   let adminSpaceMemberId: SpaceMemberID;
   let spaceMember: ISpaceMember;
@@ -188,3 +93,104 @@ describe('SpaceMemberId', () => {
     expect(() => new SpaceMemberID(spaceMember2, adminSpaceRole)).toThrow();
   });
 });
+
+class MockSpaceMember implements ISpaceMember {
+  spaceId: T_UUID;
+  userId: T_UUID;
+  roleId: T_UUID;
+  constructor(spaceId: T_UUID, userId: T_UUID, roleId: T_UUID) {
+    this.spaceId = spaceId;
+    this.userId = userId;
+    this.roleId = roleId;
+  }
+  setSpaceId(spaceId: T_UUID): boolean {
+    throw new Error('Method not implemented.');
+  }
+  isJoined(): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getId(): T_UUID {
+    throw new Error('Method not implemented.');
+  }
+  exportSpaceMemberData(): {
+    id?: Buffer;
+    spaceId?: Buffer;
+    userId?: Buffer;
+    roleId?: Buffer;
+  } {
+    throw new Error('Method not implemented.');
+  }
+  getUserId(): T_UUID {
+    return this.userId;
+  }
+  setUserId(userId: T_UUID): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getRoleId(): T_UUID {
+    return this.roleId;
+  }
+  setRoleId(roleId: T_UUID): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getSpaceId(): T_UUID {
+    return this.spaceId;
+  }
+  changeRole(
+    requesterId: T_UUID,
+    ownerMember: ISpaceMember,
+    role: ISpaceRole,
+  ): boolean {
+    throw new Error('Method not implemented.');
+  }
+}
+
+class MockSpaceRole implements ISpaceRole {
+  spaceId: T_UUID;
+  id: T_UUID;
+  permission: z.infer<typeof permissionEnum>;
+
+  constructor(
+    spaceId: T_UUID,
+    id: T_UUID,
+    permission: z.infer<typeof permissionEnum>,
+  ) {
+    this.spaceId = spaceId;
+    this.id = id;
+    this.permission = permission;
+  }
+  exportSpaceRoleData(): {
+    id: Buffer;
+    spaceId: Buffer;
+    name: string;
+    isAdmin: boolean;
+  } {
+    throw new Error('Method not implemented.');
+  }
+  isTobeRemove(): boolean {
+    throw new Error('Method not implemented.');
+  }
+  setSpaceId(spaceId: T_UUID): void {
+    throw new Error('Method not implemented.');
+  }
+  setRole(roleName: string): void {
+    throw new Error('Method not implemented.');
+  }
+  setPermission(permission: 'admin' | 'member'): void {
+    throw new Error('Method not implemented.');
+  }
+  setTobeRemove(): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getId(): T_UUID {
+    return this.id;
+  }
+  getSpaceId(): T_UUID {
+    return this.spaceId;
+  }
+  getRole(): string {
+    throw new Error('Method not implemented.');
+  }
+  getPermission(): 'admin' | 'member' {
+    return this.permission;
+  }
+}

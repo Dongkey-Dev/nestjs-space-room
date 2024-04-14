@@ -10,16 +10,20 @@ import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 
 export class SpaceMember
   extends BaseDomain<typeof spaceMemberSchema>
-  implements BaseDomain<typeof spaceMemberSchema>, ISpaceMember
+  implements ISpaceMember
 {
-  id: T_UUID;
-  spaceId: T_UUID;
-  userId: T_UUID;
-  roleId: T_UUID;
+  private id: T_UUID;
+  private spaceId: T_UUID;
+  private userId: T_UUID;
+  private roleId: T_UUID;
   constructor(data?: z.input<typeof spaceMemberSchema>) {
     super(spaceMemberSchema);
     if (data) this.import(data);
     if (!this.id) this.id = new T_UUID();
+  }
+  isJoined(): boolean {
+    if (this.spaceId && this.roleId) return true;
+    return false;
   }
   getId(): T_UUID {
     return this.id;

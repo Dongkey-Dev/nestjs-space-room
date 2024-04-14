@@ -133,6 +133,12 @@ class MockSpaceMember implements ISpaceMember {
     this.userId = userId;
     this.spaceId = spaceId;
   }
+  setSpaceId(spaceId: T_UUID): boolean {
+    throw new Error('Method not implemented.');
+  }
+  isJoined(): boolean {
+    throw new Error('Method not implemented.');
+  }
   getId(): T_UUID {
     throw new Error('Method not implemented.');
   }

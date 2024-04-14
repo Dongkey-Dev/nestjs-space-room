@@ -1,52 +1,10 @@
 import { T_UUID } from 'src/util/uuid';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 import { SpaceMember } from './spaceMember';
-
-class MockSpaceRole implements ISpaceRole {
-  exportSpaceRoleData(): {
-    id: Buffer;
-    spaceId: Buffer;
-    name: string;
-    isAdmin: boolean;
-  } {
-    throw new Error('Method not implemented.');
-  }
-  isTobeRemove(): boolean {
-    throw new Error('Method not implemented.');
-  }
-  setSpaceId(spaceId: T_UUID): void {
-    throw new Error('Method not implemented.');
-  }
-  setTobeRemove(): boolean {
-    throw new Error('Method not implemented.');
-  }
-  getSpaceId(): T_UUID {
-    throw new Error('Method not implemented.');
-  }
-  id: T_UUID;
-  setId(id: T_UUID): boolean {
-    this.id = id;
-    return true;
-  }
-  getId(): T_UUID {
-    return this.id;
-  }
-  getRole(): string {
-    throw new Error('Method not implemented.');
-  }
-  setRole(role: string): boolean {
-    throw new Error('Method not implemented.');
-  }
-  getPermission(): 'admin' | 'member' {
-    throw new Error('Method not implemented.');
-  }
-  setPermission(permission: 'admin' | 'member'): boolean {
-    throw new Error('Method not implemented.');
-  }
-}
+import { ISpaceMember } from './spaceMember.interface';
 
 describe('SpaceMember', () => {
-  let spaceMember: SpaceMember;
+  let spaceMember: ISpaceMember;
   beforeEach(() => {
     spaceMember = new SpaceMember();
   });
@@ -93,4 +51,57 @@ describe('SpaceMember', () => {
       spaceMember.changeRole(requesterId, ownerMember, newRole),
     ).toBeTruthy();
   });
+
+  it('spaceId 혹은 roleId가 설정되지 않은 경우, 참여중이 아니다', () => {
+    expect(spaceMember.isJoined()).toBeFalsy();
+  });
+
+  it('spaceId와 roleId가 설정된 경우, 참여중이다', () => {
+    spaceMember.setSpaceId(new T_UUID());
+    spaceMember.setRoleId(new T_UUID());
+    expect(spaceMember.isJoined()).toBeTruthy();
+  });
 });
+
+class MockSpaceRole implements ISpaceRole {
+  exportSpaceRoleData(): {
+    id: Buffer;
+    spaceId: Buffer;
+    name: string;
+    isAdmin: boolean;
+  } {
+    throw new Error('Method not implemented.');
+  }
+  isTobeRemove(): boolean {
+    throw new Error('Method not implemented.');
+  }
+  setSpaceId(spaceId: T_UUID): void {
+    throw new Error('Method not implemented.');
+  }
+  setTobeRemove(): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getSpaceId(): T_UUID {
+    throw new Error('Method not implemented.');
+  }
+  id: T_UUID;
+  setId(id: T_UUID): boolean {
+    this.id = id;
+    return true;
+  }
+  getId(): T_UUID {
+    return this.id;
+  }
+  getRole(): string {
+    throw new Error('Method not implemented.');
+  }
+  setRole(role: string): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getPermission(): 'admin' | 'member' {
+    throw new Error('Method not implemented.');
+  }
+  setPermission(permission: 'admin' | 'member'): boolean {
+    throw new Error('Method not implemented.');
+  }
+}

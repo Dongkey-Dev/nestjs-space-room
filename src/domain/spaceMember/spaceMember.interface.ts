@@ -25,11 +25,16 @@ export const spaceMemberPersistenceSchema = z.object({
 });
 
 export interface ISpaceMember {
+  isJoined(): boolean;
   getId(): T_UUID;
+
   getUserId(): T_UUID;
   setUserId(userId: T_UUID): boolean;
+
   getRoleId(): T_UUID;
   setRoleId(roleId: T_UUID): boolean;
+
+  setSpaceId(spaceId: T_UUID): boolean;
   getSpaceId(): T_UUID;
 
   changeRole(
