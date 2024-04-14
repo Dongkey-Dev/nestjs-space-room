@@ -28,7 +28,7 @@ export class UserService implements UserUsecase {
         id: user.getId().exportString(),
       },
       {
-        expiresIn: '7d',
+        expiresIn: '30d',
       },
     );
     return { accessToken, refreshToken };

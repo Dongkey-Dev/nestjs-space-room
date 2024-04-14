@@ -45,7 +45,7 @@ export class UserController {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 60 * 24 * 30,
     });
     return { profile: user.getProfile(), accessToken, refreshToken };
   }
