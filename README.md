@@ -9,9 +9,12 @@ erDiagram
     User ||--o{ Space : ""
     User ||--o{ Chat : "author"
 
+    Space ||--o{ SpaceEntryCode : ""
+    SpaceRole ||--o{ SpaceEntryCode : ""
+
 
     User {
-        int id PK
+        binary id PK
         varchar email
         varchar first_name
         varchar last_name
@@ -19,30 +22,37 @@ erDiagram
     }
 
     Space {
-        int id PK
+        binary id PK
         varchar name
         varchar logo
-        int owner_id FK
+        binary owner_id FK
     }
 
     SpaceRole {
-        int id PK
-        int space_id FK
+        binary id PK
+        binary space_id FK
         varchar name
         boolean is_admin
     }
 
+    SpaceEntryCode {
+        binary id
+        binary space_id
+        binary role_id
+        varchar code
+    }
+
     UserRole {
-        int id PK
-        int user_id FK
-        int space_id FK
-        int role_id FK
+        binary id PK
+        binary user_id FK
+        binary space_id FK
+        binary role_id FK
     }
 
     Post {
-        int id PK
-        int space_id FK
-        int author_id FK
+        binary id PK
+        binary space_id FK
+        binary author_id FK
         boolean is_anonymous
         boolean is_notice
         varchar title
@@ -52,10 +62,10 @@ erDiagram
     }
 
     Chat {
-        int id PK
-        int post_id FK
-        int author_id FK
-        int parent_id
+        binary id PK
+        binary post_id FK
+        binary author_id FK
+        binary parent_id
         boolean is_anonymous
         text content
         timestamp created_at
