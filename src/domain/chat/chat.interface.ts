@@ -15,9 +15,41 @@ export const chatSchema = z.object({
     .optional(),
   isAnonymous: z.boolean(),
   author: userSchema.optional(),
+
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export const chatPersistenceSchema = z.object({
+  id: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+  spaceId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+  authorId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+  postId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+  content: z.string(),
+  prevChatId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer())
+    .optional(),
+  isAnonymous: z.boolean(),
 });
 
 export interface IChat {
+  setTobeRemove(memberID: ISpaceMemberID): void;
+  isTobeRemove(): boolean;
+
+  exportChatData(): z.output<typeof chatPersistenceSchema>;
+  setContent(content: string): void;
+  changeContent(memberID: ISpaceMemberID, content: string): boolean;
+  setAnonymous(): void;
+
   getId(): T_UUID;
   getPrevChatId(): T_UUID | false;
   getContent(memberID: ISpaceMemberID);

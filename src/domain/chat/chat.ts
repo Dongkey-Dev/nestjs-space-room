@@ -1,6 +1,6 @@
 import { T_UUID } from 'src/util/uuid';
 import { BaseDomain } from '../base/baseDomain';
-import { IChat, chatSchema } from './chat.interface';
+import { IChat, chatPersistenceSchema, chatSchema } from './chat.interface';
 import { IUser } from '../user/user.interface';
 import { z } from 'zod';
 import { ISpaceMemberID } from '../spaceMemberID/spaceMemberID.interface';
@@ -18,6 +18,25 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
     super(chatSchema);
     if (data) this.import(data);
     if (!this.id) this.id = new T_UUID();
+  }
+  setTobeRemove(memberID: ISpaceMemberID): void {
+    if (
+      !memberID.isAdmin(this.spaceId) &&
+      !memberID.getUserId().isEqual(this.authorId)
+    )
+      throw new Error('Not allowed');
+    this.changes.setToBeRemoved({ id: this.id });
+  }
+  isTobeRemove(): boolean {
+    if (this.changes.exportToBeRemoved()) return true;
+    return false;
+  }
+  setContent(content: string): void {
+    if (!this.content) this.content = content;
+    throw new Error('Content already exists');
+  }
+  exportChatData(): z.output<typeof chatPersistenceSchema> {
+    return chatPersistenceSchema.parse(this.exportPersistence());
   }
   setAuthor(user: IUser): boolean {
     if (!this.authorId.isEqual(user.getId()))
@@ -83,5 +102,9 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
       throw new Error('Not allowed');
     this.content = content;
     return true;
+  }
+
+  setAnonymous(): void {
+    this.isAnonymous = true;
   }
 }
