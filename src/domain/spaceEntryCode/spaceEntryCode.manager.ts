@@ -16,6 +16,11 @@ export class SpaceEntryCodeManager
   ) {
     super(SpaceEntryCode);
   }
+  async getEntryCodeByCode(code: string): Promise<ISpaceEntryCode> {
+    const entryCode = await this.getFromDatabase(code);
+    if (!entryCode.getSpaceId()) throw new Error('wrong space code');
+    return entryCode;
+  }
 
   protected sendToDatabase(toDomain: SpaceEntryCode): Promise<boolean> {
     if (toDomain.isTobeRemove())

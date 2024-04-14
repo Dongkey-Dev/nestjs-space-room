@@ -42,11 +42,7 @@ export interface SpaceUsecase {
     ownerUuid: T_UUID,
     dto: z.infer<typeof createSpaceSchema>,
   ): Promise<ISpace>;
-  join(
-    userUuid: T_UUID,
-    inviteCode: string,
-    roleName: string,
-  ): Promise<ISpaceMemberID>;
+  join(userUuid: T_UUID, inviteCode: string): Promise<ISpaceMemberID>;
   find(userUuid: T_UUID, spaceUuid: T_UUID): Promise<ISpace[]>;
   delete(useruuid: T_UUID, spaceUuid: T_UUID): Promise<void>;
 }
