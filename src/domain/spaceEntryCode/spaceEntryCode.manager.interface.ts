@@ -13,4 +13,5 @@ export interface ISpaceEntryCodeManager {
   createEntryCodes(num: number): Promise<ISpaceEntryCode[]>;
   getEntryCodesBySpace(space: ISpace): Promise<ISpaceEntryCode[]>;
   getEntryCodeByCode(code: string): Promise<ISpaceEntryCode>;
+  applyEntryCode(entryCode: ISpaceEntryCode): Promise<boolean>;
 }

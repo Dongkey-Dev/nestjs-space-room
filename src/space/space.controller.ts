@@ -43,13 +43,6 @@ export class SpaceController {
   @UseGuards(AuthGuard('jwt'))
   @Get('join')
   async getJoinedSpace(@AuthUser() user: UserFromToken) {
-    const spaceList = await this.spaceUsecase.getJoinedSpaces(
-      new T_UUID(user.id),
-    );
-    return spaceList.map((space) => ({
-      id: space.getId().toString(),
-      name: space.getName(),
-      logo: space.getLogo(),
-    }));
+    return await this.spaceUsecase.getJoinedSpaces(new T_UUID(user.id));
   }
 }

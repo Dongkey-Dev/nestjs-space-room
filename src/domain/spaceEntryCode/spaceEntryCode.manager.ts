@@ -16,6 +16,9 @@ export class SpaceEntryCodeManager
   ) {
     super(SpaceEntryCode);
   }
+  applyEntryCode(entryCode: ISpaceEntryCode): Promise<boolean> {
+    return this.sendToDatabase(entryCode as SpaceEntryCode);
+  }
   async getEntryCodeByCode(code: string): Promise<ISpaceEntryCode> {
     const entryCode = await this.getFromDatabase(code);
     if (!entryCode.getSpaceId()) throw new Error('wrong space code');

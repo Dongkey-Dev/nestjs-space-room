@@ -7,6 +7,7 @@ import {
 } from './spaceMember.interface';
 import { z } from 'zod';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
+import { ISpace } from '../space/space.interface';
 
 export class SpaceMember
   extends BaseDomain<typeof spaceMemberSchema>
@@ -54,12 +55,8 @@ export class SpaceMember
     return true;
   }
 
-  changeRole(
-    requesterId: T_UUID,
-    ownerMember: ISpaceMember,
-    newRole: ISpaceRole,
-  ): boolean {
-    if (requesterId === ownerMember.getUserId()) {
+  changeRole(space: ISpace, requesterId: T_UUID, newRole: ISpaceRole): boolean {
+    if (requesterId.isEqual(space.getOwnerId())) {
       this.roleId = newRole.getId();
       return true;
     }

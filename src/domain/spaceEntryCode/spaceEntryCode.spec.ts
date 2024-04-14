@@ -54,6 +54,9 @@ class MockSpace implements ISpace {
   constructor(id: T_UUID) {
     this.id = id;
   }
+  setTobeRemove(requeser: T_UUID): void {
+    throw new Error('Method not implemented.');
+  }
   getId(): T_UUID {
     return this.id;
   }
@@ -100,6 +103,12 @@ class MockSpaceRole implements ISpaceRole {
   id: T_UUID;
   constructor(id: T_UUID) {
     this.id = id;
+  }
+  checkRemovableNoUse(member: ISpaceMember): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getName(): string {
+    throw new Error('Method not implemented.');
   }
   exportSpaceRoleData(): {
     id: Buffer;

@@ -1,6 +1,7 @@
 import { IUUIDTransable, T_UUID } from 'src/util/uuid';
 import { z } from 'zod';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
+import { ISpace } from '../space/space.interface';
 
 export const spaceMemberSchema = z.object({
   id: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
@@ -36,11 +37,7 @@ export interface ISpaceMember {
   setSpaceId(spaceId: T_UUID): boolean;
   getSpaceId(): T_UUID;
 
-  changeRole(
-    requesterId: T_UUID,
-    ownerMember: ISpaceMember,
-    role: ISpaceRole,
-  ): boolean;
+  changeRole(space: ISpace, requesterId: T_UUID, newRole: ISpaceRole): boolean;
 
   exportSpaceMemberData(): z.infer<typeof spaceMemberPersistenceSchema>;
 }

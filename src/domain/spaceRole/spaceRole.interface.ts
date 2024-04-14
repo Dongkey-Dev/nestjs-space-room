@@ -1,5 +1,6 @@
 import { IUUIDTransable, T_UUID } from 'src/util/uuid';
 import { z } from 'zod';
+import { ISpaceMember } from '../spaceMember/spaceMember.interface';
 
 export const permissionEnum = z.enum(['admin', 'member']);
 export const adminEnum = permissionEnum.exclude(['member']);
@@ -38,6 +39,7 @@ export interface ISpaceRole {
   exportSpaceRoleData(): z.output<typeof spaceRolePersistenceSchema>;
 
   isTobeRemove(): boolean;
+  checkRemovableNoUse(member: ISpaceMember): boolean;
 
   getId(): T_UUID;
   getSpaceId(): T_UUID;

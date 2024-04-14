@@ -2,6 +2,7 @@ import { T_UUID } from 'src/util/uuid';
 import { ISpaceMember } from '../spaceMember/spaceMember.interface';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 import { Space } from './space';
+import { ISpace } from './space.interface';
 
 describe('Space', () => {
   let space: Space;
@@ -89,6 +90,12 @@ class MockSpaceRole implements ISpaceRole {
     this.id = id;
     this.permission = permission;
   }
+  checkRemovableNoUse(member: ISpaceMember): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getName(): string {
+    throw new Error('Method not implemented.');
+  }
   exportSpaceRoleData(): {
     id: Buffer;
     spaceId: Buffer;
@@ -133,6 +140,9 @@ class MockSpaceMember implements ISpaceMember {
     this.userId = userId;
     this.spaceId = spaceId;
   }
+  changeRole(space: ISpace, requesterId: T_UUID, newRole: ISpaceRole): boolean {
+    throw new Error('Method not implemented.');
+  }
   setSpaceId(spaceId: T_UUID): boolean {
     throw new Error('Method not implemented.');
   }
@@ -148,13 +158,6 @@ class MockSpaceMember implements ISpaceMember {
     userId?: Buffer;
     roleId?: Buffer;
   } {
-    throw new Error('Method not implemented.');
-  }
-  changeRole(
-    requesterId: T_UUID,
-    ownerMember: ISpaceMember,
-    role: ISpaceRole,
-  ): boolean {
     throw new Error('Method not implemented.');
   }
   getUserId(): T_UUID {

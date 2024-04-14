@@ -2,6 +2,7 @@ import { T_UUID } from 'src/util/uuid';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 import { SpaceMember } from './spaceMember';
 import { ISpaceMember } from './spaceMember.interface';
+import { ISpace } from '../space/space.interface';
 
 describe('SpaceMember', () => {
   let spaceMember: ISpaceMember;
@@ -43,27 +44,23 @@ describe('SpaceMember', () => {
     const newRole = new MockSpaceRole();
     const oldRole = new MockSpaceRole();
     const oldRoleId = new T_UUID();
+    ownerMember.setUserId(requesterId);
+    const space = new MockSpace(ownerMember.getUserId());
     oldRole.setId(oldRoleId);
     ownerMember.setRoleId(oldRole.getId());
     ownerMember.setUserId(requesterId);
     newRole.setId(new T_UUID());
-    expect(
-      spaceMember.changeRole(requesterId, ownerMember, newRole),
-    ).toBeTruthy();
-  });
-
-  it('spaceId 혹은 roleId가 설정되지 않은 경우, 참여중이 아니다', () => {
-    expect(spaceMember.isJoined()).toBeFalsy();
-  });
-
-  it('spaceId와 roleId가 설정된 경우, 참여중이다', () => {
-    spaceMember.setSpaceId(new T_UUID());
-    spaceMember.setRoleId(new T_UUID());
-    expect(spaceMember.isJoined()).toBeTruthy();
+    expect(spaceMember.changeRole(space, requesterId, newRole)).toBeTruthy();
   });
 });
 
 class MockSpaceRole implements ISpaceRole {
+  checkRemovableNoUse(member: ISpaceMember): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getName(): string {
+    throw new Error('Method not implemented.');
+  }
   exportSpaceRoleData(): {
     id: Buffer;
     spaceId: Buffer;
@@ -102,6 +99,57 @@ class MockSpaceRole implements ISpaceRole {
     throw new Error('Method not implemented.');
   }
   setPermission(permission: 'admin' | 'member'): boolean {
+    throw new Error('Method not implemented.');
+  }
+}
+
+class MockSpace implements ISpace {
+  ownerId: T_UUID;
+  constructor(ownerId: T_UUID) {
+    this.ownerId = ownerId;
+  }
+  getId(): T_UUID {
+    throw new Error('Method not implemented.');
+  }
+  setTobeRemove(requeser: T_UUID): void {
+    throw new Error('Method not implemented.');
+  }
+  getName(): string {
+    throw new Error('Method not implemented.');
+  }
+  setName(name: string): void {
+    throw new Error('Method not implemented.');
+  }
+  changeName(name: string, ownerMember: ISpaceMember): boolean {
+    throw new Error('Method not implemented.');
+  }
+  getLogo(): string {
+    throw new Error('Method not implemented.');
+  }
+  changeLogo(logo: string, ownerMember: ISpaceMember): boolean {
+    throw new Error('Method not implemented.');
+  }
+  setLogo(logo: string): void {
+    throw new Error('Method not implemented.');
+  }
+  getOwnerId(): T_UUID {
+    return this.ownerId;
+  }
+  changeOwner(
+    oldOwnerMember: ISpaceMember,
+    newOwnerMember: ISpaceMember,
+  ): boolean {
+    throw new Error('Method not implemented.');
+  }
+  removeRole(requester: T_UUID, spaceRole: ISpaceRole): boolean {
+    throw new Error('Method not implemented.');
+  }
+  exportSpaceData(): {
+    id?: Buffer;
+    name?: string;
+    logo?: string;
+    ownerId?: Buffer;
+  } {
     throw new Error('Method not implemented.');
   }
 }

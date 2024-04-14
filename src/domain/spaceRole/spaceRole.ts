@@ -7,10 +7,11 @@ import {
   spaceRoleSchema,
 } from './spaceRole.interface';
 import { z } from 'zod';
+import { ISpaceMember } from '../spaceMember/spaceMember.interface';
 
 export class SpaceRole
   extends BaseDomain<typeof spaceRoleSchema>
-  implements BaseDomain<typeof spaceRoleSchema>, ISpaceRole
+  implements ISpaceRole
 {
   private id: T_UUID;
   private spaceId: T_UUID;
@@ -20,6 +21,10 @@ export class SpaceRole
     super(spaceRoleSchema);
     if (!data.id) data.id = new T_UUID();
     this.import(data);
+  }
+  checkRemovableNoUse(member: ISpaceMember): boolean {
+    if (member.getRoleId().isEqual(this.id)) throw new Error('Role is in use');
+    return true;
   }
   getName(): string {
     if (!this.roleName) throw new Error('Role name is not set');
