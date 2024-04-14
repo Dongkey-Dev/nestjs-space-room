@@ -24,6 +24,20 @@ export const postSchema = z.object({
   updatedAt: z.date().optional(),
 });
 
+export const postResponseSchema = z.object({
+  id: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
+  type: z.string(),
+  spaceId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
+  isAnonymous: z.boolean(),
+  title: z.string(),
+  content: z.string(),
+  authorLastName: z.string(),
+  authorFirstName: z.string(),
+  authorProfileImage: z.string(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
 export const postPersistenceSchema = z.object({
   id: z
     .custom<IUUIDTransable>()
@@ -41,6 +55,9 @@ export const postPersistenceSchema = z.object({
 });
 
 export interface IPost {
+  exportResponseData(
+    memberId: ISpaceMemberID,
+  ): z.infer<typeof postResponseSchema>;
   exportPostData(): z.infer<typeof postPersistenceSchema>;
   setTobeRemove(memberId: ISpaceMemberID): void;
   isTobeRemove(): boolean;
@@ -50,8 +67,8 @@ export interface IPost {
   getSpaceId(): T_UUID;
   changeTypeNotice(spaceMember: ISpaceMemberID): boolean;
 
-  chnageTitle(requester: T_UUID, title: string): boolean;
-  chnageContent(requester: T_UUID, content: string): boolean;
+  changeTitle(requester: T_UUID, title: string): boolean;
+  changeContent(requester: T_UUID, content: string): boolean;
 
   getTitle(): string;
   setTitle(title: string): void;
@@ -76,6 +93,22 @@ export interface IPost {
   setAnonymous(): void;
 }
 
+export const exportPostsSchema = z
+  .object({
+    id: z
+      .custom<IUUIDTransable>()
+      .transform((val) => new T_UUID(val).exportBuffer()),
+    type: z.string(),
+    spaceId: z
+      .custom<IUUIDTransable>()
+      .transform((val) => new T_UUID(val).exportBuffer()),
+    title: z.string(),
+    totalComments: z.number().default(0),
+    ranking: z.number().default(0),
+  })
+  .array();
+
 export interface IPostList {
   getPosts(): IPost[];
+  exportPosts(): z.output<typeof exportPostsSchema>;
 }

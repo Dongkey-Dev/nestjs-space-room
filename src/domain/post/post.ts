@@ -16,7 +16,6 @@ export class PostList implements IPostList {
   posts: IPost[];
   total: number;
   constructor(posts: IPost[]) {
-    // 입력받은 posts의 모든 인자의 spaceId가 동일한지 확인하고, 동일하지 않다면 에러 발생
     if (
       posts.some((post) => post.getSpaceId() !== posts[0].getSpaceId()) ||
       posts.length === 0
@@ -55,6 +54,27 @@ export class PostList implements IPostList {
     this.rankPosts();
     return this.posts;
   }
+
+  exportPosts(): {
+    id?: Buffer;
+    type?: string;
+    spaceId?: Buffer;
+    title?: string;
+    totalComments?: number;
+    ranking?: number;
+  }[] {
+    const posts = this.getPosts();
+    return posts.map((post) => {
+      return {
+        id: post.getId().exportBuffer(),
+        type: post.getType(),
+        spaceId: post.getSpaceId().exportBuffer(),
+        title: post.getTitle(),
+        totalComments: post.getTotalChats(),
+        ranking: post.getRanking(),
+      };
+    });
+  }
 }
 
 export class Post extends BaseDomain<typeof postSchema> implements IPost {
@@ -77,6 +97,54 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
     if (data) this.import(data);
     if (!this.id) this.id = new T_UUID();
   }
+  exportResponseData(memberId: ISpaceMemberID): {
+    id?: T_UUID;
+    type?: string;
+    spaceId?: T_UUID;
+    isAnonymous?: boolean;
+    title?: string;
+    content?: string;
+    authorLastName?: string;
+    authorFirstName?: string;
+    authorProfileImage?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+  } {
+    if (
+      this.isAnonymous &&
+      !(
+        memberId.isAdmin(this.spaceId) ||
+        this.authorId.isEqual(memberId.getUserId())
+      )
+    ) {
+      return {
+        id: this.id,
+        type: this.type,
+        spaceId: this.spaceId,
+        isAnonymous: true,
+        title: this.title,
+        content: this.content,
+        authorLastName: 'Anonymous',
+        authorFirstName: 'Anonymouss',
+        authorProfileImage: 'Anonymous.png',
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
+      };
+    }
+    return {
+      id: this.id,
+      type: this.type,
+      spaceId: this.spaceId,
+      isAnonymous: this.isAnonymous,
+      title: this.title,
+      content: this.content,
+      authorLastName: this.author.getProfile().lastName,
+      authorFirstName: this.author.getProfile().firstName,
+      authorProfileImage: this.author.getProfile().profileImage,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+  }
   isTobeRemove(): boolean {
     if (this.changes.exportToBeRemoved()) return true;
     return false;
@@ -93,14 +161,16 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
   setAnonymous(): void {
     this.isAnonymous = true;
   }
-  chnageTitle(requester: T_UUID, title: string): boolean {
+  changeTitle(requester: T_UUID, title: string): boolean {
+    if (!title) return true;
     if (requester.isEqual(this.authorId)) {
       this.title = title;
       return true;
     }
     throw new Error('Only author can change title');
   }
-  chnageContent(requester: T_UUID, content: string): boolean {
+  changeContent(requester: T_UUID, content: string): boolean {
+    if (!content) return true;
     if (requester.isEqual(this.authorId)) {
       this.content = content;
       return true;

@@ -1,6 +1,7 @@
+import { T_UUID } from 'src/util/uuid';
 import { ISpace } from '../space/space.interface';
 import { IUser } from '../user/user.interface';
-import { IPost } from './post.interface';
+import { IPost, IPostList } from './post.interface';
 
 export interface IPostManager {
   createPost(
@@ -8,7 +9,9 @@ export interface IPostManager {
     content: string,
     title: string,
     isAnonymous?: boolean,
-  ): IPost;
-  getPosts(space: ISpace): Promise<IPost[]>;
+  ): Promise<IPost>;
+  getPosts(space: ISpace): Promise<IPostList>;
+  getPost(id: T_UUID): Promise<IPost>;
   deletePost(post: IPost): Promise<boolean>;
+  updatePost(post: IPost): Promise<boolean>;
 }

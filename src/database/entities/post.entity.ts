@@ -32,6 +32,12 @@ export class PostEntity {
   @JoinColumn({ name: 'author_id' })
   author: UserEntity;
 
+  @Column({ name: 'total_comments' })
+  totalComments: number;
+
+  @Column({ name: 'total_participants' })
+  totalParticipants: number;
+
   @Column({ name: 'is_anonymous' })
   isAnonymous: boolean;
 

@@ -41,10 +41,41 @@ export const chatPersistenceSchema = z.object({
   isAnonymous: z.boolean(),
 });
 
+export const chatResponseSchema = z.object({
+  id: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportString()),
+  spaceId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportString()),
+  authorId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportString()),
+  postId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportString()),
+  content: z.string(),
+  prevChatId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportString())
+    .optional(),
+  isAnonymous: z.boolean(),
+
+  authorFirstName: z.string(),
+  authorLastName: z.string(),
+  authorProfileImage: z.string(),
+
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
 export interface IChat {
   setTobeRemove(memberID: ISpaceMemberID): void;
   isTobeRemove(): boolean;
 
+  exportResponseData(
+    memberID: ISpaceMemberID,
+  ): z.output<typeof chatResponseSchema>;
   exportChatData(): z.output<typeof chatPersistenceSchema>;
   setContent(content: string): void;
   changeContent(memberID: ISpaceMemberID, content: string): boolean;

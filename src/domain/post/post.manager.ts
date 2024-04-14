@@ -5,7 +5,8 @@ import { Post } from './post';
 import { IPostRepository } from './post.repository';
 import { ISpace } from '../space/space.interface';
 import { IUser } from '../user/user.interface';
-import { IPost } from './post.interface';
+import { IPost, IPostList } from './post.interface';
+import { T_UUID } from 'src/util/uuid';
 
 @Injectable()
 export class PostManager extends DomainManager<Post> implements IPostManager {
@@ -29,12 +30,12 @@ export class PostManager extends DomainManager<Post> implements IPostManager {
     return (await this.postRepository.findPost(entityKey)) as Post;
   }
 
-  createPost(
+  async createPost(
     writer: IUser,
     content: string,
     title: string,
     isAnonymous?: boolean,
-  ): IPost {
+  ): Promise<IPost> {
     const post = this.createDomain();
     post.setAuthor(writer);
     post.setContent(content);
@@ -42,15 +43,24 @@ export class PostManager extends DomainManager<Post> implements IPostManager {
     if (isAnonymous) {
       post.setAnonymous();
     }
+    await this.sendToDatabase(post);
     return post;
   }
 
-  async getPosts(space: ISpace): Promise<IPost[]> {
+  async getPosts(space: ISpace): Promise<IPostList> {
     const postList = await this.postRepository.findPostBySpace(space.getId());
-    return postList.getPosts();
+    return postList;
+  }
+
+  async getPost(id: T_UUID): Promise<IPost> {
+    return await this.getFromDatabase(id);
   }
 
   async deletePost(post: IPost): Promise<boolean> {
+    return await this.sendToDatabase(post as Post);
+  }
+
+  async updatePost(post: IPost): Promise<boolean> {
     return await this.sendToDatabase(post as Post);
   }
 }

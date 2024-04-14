@@ -14,11 +14,66 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
   private prevChatId?: T_UUID;
   private isAnonymous: boolean;
   private author: IUser;
+
+  private createdAt?: Date;
+  private updatedAt?: Date;
   constructor(data?: z.infer<typeof chatSchema>) {
     super(chatSchema);
     if (data) this.import(data);
     if (!this.id) this.id = new T_UUID();
   }
+  exportResponseData(memberID: ISpaceMemberID): {
+    id?: string;
+    spaceId?: string;
+    authorId?: string;
+    postId?: string;
+    content?: string;
+    prevChatId?: string;
+    isAnonymous?: boolean;
+    authorFirstName?: string;
+    authorLastName?: string;
+    authorProfileImage?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+  } {
+    if (
+      this.isAnonymous &&
+      !(
+        memberID.isAdmin(this.spaceId) ||
+        this.authorId.isEqual(memberID.getUserId())
+      )
+    ) {
+      return {
+        id: this.id.toString(),
+        spaceId: this.spaceId.toString(),
+        authorId: this.authorId.toString(),
+        postId: this.postId.toString(),
+        content: this.content,
+        prevChatId: this.prevChatId?.toString(),
+        isAnonymous: true,
+        authorFirstName: 'Anonymous',
+        authorLastName: 'Anonymous',
+        authorProfileImage: 'Anonymous.png',
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
+      };
+    }
+    return {
+      id: this.id.toString(),
+      spaceId: this.spaceId.toString(),
+      authorId: this.authorId.toString(),
+      postId: this.postId.toString(),
+      content: this.content,
+      prevChatId: this.prevChatId?.toString(),
+      isAnonymous: this.isAnonymous,
+      authorFirstName: this.author.getProfile().firstName,
+      authorLastName: this.author.getProfile().lastName,
+      authorProfileImage: this.author.getProfile().profileImage,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+  }
+
   setTobeRemove(memberID: ISpaceMemberID): void {
     if (
       !memberID.isAdmin(this.spaceId) &&
