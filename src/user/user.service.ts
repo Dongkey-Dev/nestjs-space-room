@@ -13,7 +13,7 @@ import { IUser } from 'src/domain/user/user.interface';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class UserSerivce implements UserUsecase {
+export class UserService implements UserUsecase {
   constructor(
     @Inject('IUserManager')
     private readonly userManager: IUserManager,

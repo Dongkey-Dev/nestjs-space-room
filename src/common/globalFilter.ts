@@ -12,6 +12,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception.stack) console.error(exception.stack);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
+
     const status = exception.getStatus();
     const message = exception.getResponse();
     response.status(status).json(message);

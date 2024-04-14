@@ -4,7 +4,7 @@ import { SpaceEntryCode } from './spaceEntryCode';
 import { ISpaceEntryCode } from './spaceEntryCode.interface';
 import { ISpaceEntryCodeManager } from './spaceEntryCode.manager.interface';
 import { ISpaceEntryCodeRepository } from './spaceEntryCode.repository';
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 
 export class SpaceEntryCodeManager
   extends DomainManager<SpaceEntryCode>
@@ -21,7 +21,8 @@ export class SpaceEntryCodeManager
   }
   async getEntryCodeByCode(code: string): Promise<ISpaceEntryCode> {
     const entryCode = await this.getFromDatabase(code);
-    if (!entryCode.getSpaceId()) throw new Error('wrong space code');
+    if (!entryCode.getSpaceId())
+      throw new BadRequestException('wrong space code');
     return entryCode;
   }
 
@@ -53,7 +54,7 @@ export class SpaceEntryCodeManager
       space.getId(),
     );
     if (codeList.length === 0) {
-      throw new Error('No entry code found.');
+      throw new BadRequestException('No entry code found.');
     }
     return codeList;
   }

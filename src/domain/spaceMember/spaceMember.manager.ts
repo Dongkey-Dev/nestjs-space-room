@@ -4,7 +4,7 @@ import { ISpaceMemberManager } from './spaceMember.manager.interface';
 import { ISpaceMember } from './spaceMember.interface';
 import { ISpace } from '../space/space.interface';
 import { IUser } from '../user/user.interface';
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { ISpaceMemberRepository } from './spaceMember.repository';
 import { T_UUID } from 'src/util/uuid';
 
@@ -30,14 +30,14 @@ export class SpaceMemberManager
   }
   protected async sendToDatabase(toDomain: SpaceMember): Promise<boolean> {
     const result = await this.spaceMemberRepository.saveMember(toDomain);
-    if (!result) throw new Error('Failed to save space member');
+    if (!result) throw new BadRequestException('Failed to save space member');
     return true;
   }
   protected getFromDatabase(
     entityKey: any,
     condition?: any,
   ): Promise<SpaceMember> {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   async applyMember(member: ISpaceMember): Promise<boolean> {
     return await this.sendToDatabase(member as SpaceMember);

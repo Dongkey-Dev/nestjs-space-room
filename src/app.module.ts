@@ -5,6 +5,9 @@ import { UserModule } from './user/user.module';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 import { GlobalExceptionFilter } from './common/globalFilter';
+import { SpaceModule } from './space/space.module';
+import { RoleModule } from './role/role.module';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -14,8 +17,10 @@ import { GlobalExceptionFilter } from './common/globalFilter';
     }),
     DatabaseModule,
     UserModule,
+    SpaceModule,
+    RoleModule,
+    PostModule,
   ],
-  controllers: [],
   providers: [
     {
       provide: APP_PIPE,

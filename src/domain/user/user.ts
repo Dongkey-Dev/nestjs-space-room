@@ -40,7 +40,7 @@ export class User
   }
 
   keepPassword(password: string) {
-    if (this.password) throw new Error('password already set');
+    if (this.password) throw new BadRequestException('password already set');
     this.password = password;
   }
 
@@ -54,7 +54,8 @@ export class User
   }
 
   setProfile(dto: z.infer<typeof userSchema>): boolean {
-    if (this.isValid()) throw new Error('already user profile set');
+    if (this.isValid())
+      throw new BadRequestException('already user profile set');
     this.import(dto);
     return true;
   }
@@ -73,10 +74,10 @@ export class User
     requester: T_UUID,
   ): boolean {
     if (!requester.isEqual(this.id))
-      throw new Error('Only owner can change profile');
-    if (!this.isValid()) throw new Error('profile not set yet');
+      throw new BadRequestException('Only owner can change profile');
+    if (!this.isValid()) throw new BadRequestException('profile not set yet');
     const setResult = this.importPartial(profile);
-    if (!setResult) throw new Error('Profile set failed');
+    if (!setResult) throw new BadRequestException('Profile set failed');
     return setResult;
   }
 }

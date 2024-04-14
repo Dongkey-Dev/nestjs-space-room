@@ -3,7 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  Index,
+  JoinColumn,
   ManyToOne,
   PrimaryColumn,
   UpdateDateColumn,
@@ -17,26 +17,28 @@ export class UserRoleEntity {
   @PrimaryColumn({ type: 'binary', length: 16, generated: false })
   id: Buffer;
 
-  @Index()
-  @Column({ type: 'binary', length: 16, name: 'user_id' })
+  @Column({ name: 'user_id', type: 'binary', length: 16 })
   userId: Buffer;
 
-  @ManyToOne(() => UserEntity, { nullable: false })
+  @ManyToOne(() => UserEntity, (user) => user.id)
+  @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
-  @Index()
-  @Column({ type: 'binary', length: 16, name: 'space_id' })
+  @Column({ name: 'space_id', type: 'binary', length: 16 })
   spaceId: Buffer;
 
-  @ManyToOne(() => SpaceEntity, (space) => space.id)
+  @ManyToOne(() => SpaceEntity, (space) => space.userRoles)
+  @JoinColumn({ name: 'space_id' })
   space: SpaceEntity;
 
-  @Index()
-  @Column({ type: 'binary', length: 16, name: 'role_id' })
+  @Column({ name: 'role_id', type: 'binary', length: 16, nullable: true })
   roleId: Buffer;
 
-  @ManyToOne(() => SpaceRoleEntity, { nullable: true })
-  role: SpaceRoleEntity;
+  @ManyToOne(() => SpaceRoleEntity, (role) => role.id, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'role_id' })
+  role: SpaceRoleEntity | null;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

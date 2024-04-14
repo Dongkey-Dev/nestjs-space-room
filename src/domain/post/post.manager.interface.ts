@@ -8,6 +8,7 @@ export interface IPostManager {
     writer: IUser,
     content: string,
     title: string,
+    spaceId: T_UUID,
     isAnonymous?: boolean,
   ): Promise<IPost>;
   getPosts(space: ISpace): Promise<IPostList>;

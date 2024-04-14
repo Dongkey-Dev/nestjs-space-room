@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { DomainManager } from '../base/domainManager';
 import { SpaceRole } from './spaceRole';
 import { ISpaceRole, permissionEnum } from './spaceRole.interface';
@@ -41,7 +41,7 @@ export class SpaceRoleManager
 
   async applyRole(role: ISpaceRole): Promise<boolean> {
     const result = this.sendToDatabase(role as SpaceRole);
-    if (!result) throw new Error('Failed to save space role');
+    if (!result) throw new BadRequestException('Failed to save space role');
     return true;
   }
   protected async sendToDatabase(toDomain: SpaceRole): Promise<boolean> {
@@ -49,7 +49,7 @@ export class SpaceRoleManager
     if (toDomain.isTobeRemove())
       result = await this.spaceRoleRepository.deleteRole(toDomain);
     result = await this.spaceRoleRepository.saveRole(toDomain);
-    if (!result) throw new Error('Failed to apply space role');
+    if (!result) throw new BadRequestException('Failed to apply space role');
     return true;
   }
   protected getFromDatabase(

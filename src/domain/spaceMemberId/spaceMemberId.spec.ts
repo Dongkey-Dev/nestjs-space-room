@@ -105,16 +105,16 @@ class MockSpaceMember implements ISpaceMember {
     this.roleId = roleId;
   }
   changeRole(space: ISpace, requesterId: T_UUID, newRole: ISpaceRole): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setSpaceId(spaceId: T_UUID): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   isJoined(): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getId(): T_UUID {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   exportSpaceMemberData(): {
     id?: Buffer;
@@ -122,19 +122,19 @@ class MockSpaceMember implements ISpaceMember {
     userId?: Buffer;
     roleId?: Buffer;
   } {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getUserId(): T_UUID {
     return this.userId;
   }
   setUserId(userId: T_UUID): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getRoleId(): T_UUID {
     return this.roleId;
   }
   setRoleId(roleId: T_UUID): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getSpaceId(): T_UUID {
     return this.spaceId;
@@ -156,10 +156,10 @@ class MockSpaceRole implements ISpaceRole {
     this.permission = permission;
   }
   checkRemovableNoUse(member: ISpaceMember): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getName(): string {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   exportSpaceRoleData(): {
     id: Buffer;
@@ -167,22 +167,22 @@ class MockSpaceRole implements ISpaceRole {
     name: string;
     isAdmin: boolean;
   } {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   isTobeRemove(): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setSpaceId(spaceId: T_UUID): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setRole(roleName: string): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setPermission(permission: 'admin' | 'member'): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setTobeRemove(): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getId(): T_UUID {
     return this.id;
@@ -191,7 +191,7 @@ class MockSpaceRole implements ISpaceRole {
     return this.spaceId;
   }
   getRole(): string {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getPermission(): 'admin' | 'member' {
     return this.permission;

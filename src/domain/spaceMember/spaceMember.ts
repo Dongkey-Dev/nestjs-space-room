@@ -8,6 +8,7 @@ import {
 import { z } from 'zod';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 import { ISpace } from '../space/space.interface';
+import { BadRequestException } from '@nestjs/common';
 
 export class SpaceMember
   extends BaseDomain<typeof spaceMemberSchema>
@@ -26,10 +27,10 @@ export class SpaceMember
     return this.id;
   }
   exportSpaceMemberData(): z.infer<typeof spaceMemberPersistenceSchema> {
-    return this.exportPersistence();
+    return spaceMemberPersistenceSchema.parse(this.exportPersistence());
   }
   getUserId(): T_UUID {
-    if (!this.userId) throw new Error('User id is not set');
+    if (!this.userId) throw new BadRequestException('User id is not set');
     return this.userId;
   }
   setUserId(userId: T_UUID): boolean {
@@ -37,21 +38,21 @@ export class SpaceMember
     return true;
   }
   getRoleId(): T_UUID {
-    if (!this.roleId) throw new Error('Role id is not set');
+    if (!this.roleId) throw new BadRequestException('Role id is not set');
     return this.roleId;
   }
   setRoleId(roleId: T_UUID): boolean {
     if (!this.roleId) this.roleId = roleId;
-    else throw new Error('Role id is already set');
+    else throw new BadRequestException('Role id is already set');
     return true;
   }
   getSpaceId(): T_UUID {
-    if (!this.spaceId) throw new Error('Space id is not set');
+    if (!this.spaceId) throw new BadRequestException('Space id is not set');
     return this.spaceId;
   }
   setSpaceId(spaceId: T_UUID): boolean {
     if (!this.spaceId) this.spaceId = spaceId;
-    else throw new Error('Space id is already set');
+    else throw new BadRequestException('Space id is already set');
     return true;
   }
 
@@ -60,6 +61,6 @@ export class SpaceMember
       this.roleId = newRole.getId();
       return true;
     }
-    throw new Error('Only owner can change role');
+    throw new BadRequestException('Only owner can change role');
   }
 }

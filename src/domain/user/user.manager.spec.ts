@@ -25,13 +25,13 @@ class MockUser implements IUser {
     this.profileImage = profileImage;
   }
   login(password: string): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   keepPassword(password: string): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   popPassword(): string {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
 
   getId(): T_UUID {
@@ -57,7 +57,7 @@ class MockUser implements IUser {
     firstName?: string;
     profileImage?: string;
   } {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setProfile(profile: {
     id?: T_UUID;
@@ -66,7 +66,7 @@ class MockUser implements IUser {
     firstName?: string;
     profileImage?: string;
   }): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   updateProfile(
     profile: { lastName?: string; firstName?: string; profileImage?: string },
@@ -81,10 +81,10 @@ class MockUser implements IUser {
 
 class MockUserRepository implements IUserRepository {
   getUserForLogin(email: string): Promise<IUser> {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   registUser(userData: z.infer<typeof registUserSchema>): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   saveUser(user: IUser & BaseDomain<typeof userSchema>): Promise<boolean> {
     return Promise.resolve(true);
@@ -95,7 +95,7 @@ class MockUserRepository implements IUserRepository {
     );
   }
   softRemoveUser(id: T_UUID): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
 }
 

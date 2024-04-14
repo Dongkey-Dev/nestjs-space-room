@@ -4,6 +4,7 @@ import { ISpaceMemberID, spaceMemberIDSchema } from './spaceMemberID.interface';
 import { z } from 'zod';
 import { ISpaceRole, permissionEnum } from '../spaceRole/spaceRole.interface';
 import { ISpaceMember } from '../spaceMember/spaceMember.interface';
+import { BadRequestException } from '@nestjs/common';
 
 export class SpaceMemberID
   extends BaseDomain<typeof spaceMemberIDSchema>
@@ -23,7 +24,7 @@ export class SpaceMemberID
         permission: role.getPermission(),
       });
     } else {
-      throw new Error('SpaceMemberId generation failed');
+      throw new BadRequestException('SpaceMemberId generation failed');
     }
   }
   getUserId(): T_UUID {

@@ -36,7 +36,7 @@ export class SpaceController {
       dto.inviteCode,
     );
     return {
-      spaceId: member.getSpaceId(),
+      spaceId: member.getSpaceId().exportString(),
     };
   }
 

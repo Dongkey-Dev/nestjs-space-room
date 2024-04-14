@@ -1,5 +1,5 @@
 import { T_UUID } from 'src/util/uuid';
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ISpace } from './space.interface';
 import { SpaceEntity } from 'src/database/entities/space.entity';
@@ -32,7 +32,7 @@ export class SpaceRepository implements ISpaceRepository {
         where: { id: id.exportBuffer() },
         relations: ['UserRoles'],
       });
-    if (!spaceEntity) throw new Error('Space not found');
+    if (!spaceEntity) throw new BadRequestException('Space not found');
 
     return this.dataSource
       .getRepository(UserRoleEntity)

@@ -10,6 +10,8 @@ import {
 } from './post.interface';
 import { IUser, userSchema } from '../user/user.interface';
 import { ISpaceMemberID } from '../spaceMemberID/spaceMemberID.interface';
+import { BadRequestException } from '@nestjs/common';
+import { DomainChange } from '../base/domainChange';
 
 export class PostList implements IPostList {
   spaceId: T_UUID;
@@ -20,7 +22,7 @@ export class PostList implements IPostList {
       posts.some((post) => post.getSpaceId() !== posts[0].getSpaceId()) ||
       posts.length === 0
     ) {
-      throw new Error('All posts should have the same spaceId');
+      throw new BadRequestException('All posts should have the same spaceId');
     }
     this.spaceId = posts[0].getSpaceId();
     this.posts = posts;
@@ -79,9 +81,9 @@ export class PostList implements IPostList {
 
 export class Post extends BaseDomain<typeof postSchema> implements IPost {
   private id: T_UUID;
-  private type: string;
+  private type: string = 'question';
   private spaceId: T_UUID;
-  private isAnonymous: boolean;
+  private isAnonymous: boolean = false;
   private title: string;
   private content: string;
   private authorId: T_UUID;
@@ -96,11 +98,15 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
     super(postSchema);
     if (data) this.import(data);
     if (!this.id) this.id = new T_UUID();
+    this.changes = new DomainChange();
+  }
+  setSpaceId(spaceId: T_UUID): void {
+    this.spaceId = spaceId;
   }
   exportResponseData(memberId: ISpaceMemberID): {
-    id?: T_UUID;
+    id?: string;
     type?: string;
-    spaceId?: T_UUID;
+    spaceId?: string;
     isAnonymous?: boolean;
     title?: string;
     content?: string;
@@ -118,9 +124,9 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
       )
     ) {
       return {
-        id: this.id,
+        id: this.id.exportString(),
         type: this.type,
-        spaceId: this.spaceId,
+        spaceId: this.spaceId.exportString(),
         isAnonymous: true,
         title: this.title,
         content: this.content,
@@ -132,9 +138,9 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
       };
     }
     return {
-      id: this.id,
+      id: this.id.exportString(),
       type: this.type,
-      spaceId: this.spaceId,
+      spaceId: this.spaceId.exportString(),
       isAnonymous: this.isAnonymous,
       title: this.title,
       content: this.content,
@@ -156,7 +162,7 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
     ) {
       this.changes.setToBeRemoved({ id: this.id });
     }
-    throw new Error('Only author or admin can remove post');
+    throw new BadRequestException('Only author or admin can remove post');
   }
   setAnonymous(): void {
     this.isAnonymous = true;
@@ -167,7 +173,7 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
       this.title = title;
       return true;
     }
-    throw new Error('Only author can change title');
+    throw new BadRequestException('Only author can change title');
   }
   changeContent(requester: T_UUID, content: string): boolean {
     if (!content) return true;
@@ -175,18 +181,28 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
       this.content = content;
       return true;
     }
-    throw new Error('Only author can change content');
+    throw new BadRequestException('Only author can change content');
   }
   setTitle(title: string): void {
-    if (this.title) throw new Error('Title is already set');
+    if (this.title) throw new BadRequestException('Title is already set');
     this.title = title;
   }
   setContent(content: string): void {
-    if (this.content) throw new Error('Content is already set');
+    if (this.content) throw new BadRequestException('Content is already set');
     this.content = content;
   }
   exportPostData(): z.infer<typeof postPersistenceSchema> {
-    return postPersistenceSchema.parse(this.exportPersistence());
+    return {
+      id: this.id.exportBuffer(),
+      type: this.type,
+      spaceId: this.spaceId.exportBuffer(),
+      isAnonymous: this.isAnonymous,
+      title: this.title,
+      content: this.content,
+      authorId: this.author.getId().exportBuffer(),
+      totalComments: this.totalComments || 0,
+      totalParticipants: this.totalParticipants || 0,
+    };
   }
   getSpaceId(): T_UUID {
     return this.spaceId;
@@ -209,7 +225,7 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
     return this.content;
   }
   setAuthor(author: IUser): boolean {
-    if (this.author) throw new Error('Author is already set');
+    if (this.author) throw new BadRequestException('Author is already set');
     this.author = author;
     return true;
   }
@@ -241,7 +257,7 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
       this.type = 'notice';
       return true;
     }
-    throw new Error('Only admin can change post type');
+    throw new BadRequestException('Only admin can change post type');
   }
   setRanking(ranking: number): boolean {
     this.ranking = ranking;

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ISpaceManager } from 'src/domain/space/space.manager.interface';
 import { ISpaceMemberManager } from 'src/domain/spaceMember/spaceMember.manager.interface';
 import { ISpaceRoleManager } from 'src/domain/spaceRole/spaceRole.manager.interface';
@@ -6,11 +6,11 @@ import { ISpaceEntryCodeManager } from 'src/domain/spaceEntryCode/spaceEntryCode
 import { IUserManager } from 'src/domain/user/user.manager.interface';
 import { RoleUsecase } from './role.usecase';
 import { T_UUID } from 'src/util/uuid';
-import { SpaceMemberID } from 'src/domain/spaceMemberID/spaceMemberID';
+
 @Injectable()
-export class RoleSerivce implements RoleUsecase {
+export class RoleService implements RoleUsecase {
   constructor(
-    @Inject('ISpaceUserManager')
+    @Inject('IUserManager')
     private readonly userManager: IUserManager,
     @Inject('ISpaceManager')
     private readonly spaceManager: ISpaceManager,
@@ -44,9 +44,12 @@ export class RoleSerivce implements RoleUsecase {
     requesterUuid: T_UUID,
     spaceUuid: T_UUID,
     roleList: { name?: string; permission?: 'admin' | 'member' }[],
-  ): Promise<boolean> {
+  ) {
     const space = await this.spaceManager.getSpace(spaceUuid);
-    roleList.forEach(async (role) => {
+    if (!space.getOwnerId().isEqual(requesterUuid))
+      throw new BadRequestException('Invalid Owner');
+    const response = [];
+    for (const role of roleList) {
       const spaceRole = this.spaceRoleManager.createRole(
         spaceUuid,
         role.name,
@@ -58,8 +61,9 @@ export class RoleSerivce implements RoleUsecase {
       entryCode.setSpaceId(space);
       entryCode.setRoleId(spaceRole);
       await this.spaceEntryCodeManager.applyEntryCode(entryCode);
-    });
-    return true;
+      response.push(entryCode.exportCode(spaceRole));
+    }
+    return response;
   }
 
   async removeRole(

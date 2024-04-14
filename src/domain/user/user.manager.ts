@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { DomainManager } from '../base/domainManager';
 import { IUserManager } from './user.manager.interface';
 import { IUserRepository } from './user.repository';
@@ -26,7 +26,7 @@ export class UserManager extends DomainManager<User> implements IUserManager {
   }
   protected async sendToDatabase(toDomain: User): Promise<boolean> {
     const result = await this.userRepository.saveUser(toDomain);
-    if (!result) throw new Error('Failed to save user');
+    if (!result) throw new BadRequestException('Failed to save user');
     return true;
   }
   protected getFromDatabase(entityKey: any, condition?: any): Promise<User> {
@@ -36,6 +36,6 @@ export class UserManager extends DomainManager<User> implements IUserManager {
     entityKey: any,
     condition?: any,
   ): Promise<IUser[]> {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
 }

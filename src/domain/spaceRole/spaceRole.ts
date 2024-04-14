@@ -8,6 +8,8 @@ import {
 } from './spaceRole.interface';
 import { z } from 'zod';
 import { ISpaceMember } from '../spaceMember/spaceMember.interface';
+import { DomainChange } from '../base/domainChange';
+import { BadRequestException } from '@nestjs/common';
 
 export class SpaceRole
   extends BaseDomain<typeof spaceRoleSchema>
@@ -19,15 +21,17 @@ export class SpaceRole
   private permission: z.infer<typeof permissionEnum>;
   constructor(data?: z.infer<typeof spaceRoleSchema>) {
     super(spaceRoleSchema);
-    if (!data.id) data.id = new T_UUID();
-    this.import(data);
+    if (data) this.import(data);
+    if (!this.id) this.id = new T_UUID();
+    this.changes = new DomainChange();
   }
   checkRemovableNoUse(member: ISpaceMember): boolean {
-    if (member.getRoleId().isEqual(this.id)) throw new Error('Role is in use');
+    if (member.getRoleId().isEqual(this.id))
+      throw new BadRequestException('Role is in use');
     return true;
   }
   getName(): string {
-    if (!this.roleName) throw new Error('Role name is not set');
+    if (!this.roleName) throw new BadRequestException('Role name is not set');
     return this.roleName;
   }
   isTobeRemove(): boolean {
@@ -57,11 +61,12 @@ export class SpaceRole
     return this.id;
   }
   getRole(): string {
-    if (!this.roleName) throw new Error('Role name is not set');
+    if (!this.roleName) throw new BadRequestException('Role name is not set');
     return this.roleName;
   }
   getPermission(): z.infer<typeof permissionEnum> {
-    if (!this.permission) throw new Error('Permission is not set');
+    if (!this.permission)
+      throw new BadRequestException('Permission is not set');
     return this.permission;
   }
 }

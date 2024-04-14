@@ -28,7 +28,7 @@ export class PostEntity {
   @Column({ type: 'binary', length: 16, name: 'author_id' })
   authorId: Buffer;
 
-  @ManyToOne(() => UserEntity, { nullable: false })
+  @ManyToOne(() => UserEntity, (users) => users.posts)
   @JoinColumn({ name: 'author_id' })
   author: UserEntity;
 

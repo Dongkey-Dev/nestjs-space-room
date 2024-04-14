@@ -4,6 +4,7 @@ import { IChat, chatPersistenceSchema, chatSchema } from './chat.interface';
 import { IUser } from '../user/user.interface';
 import { z } from 'zod';
 import { ISpaceMemberID } from '../spaceMemberID/spaceMemberID.interface';
+import { BadRequestException } from '@nestjs/common';
 
 export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
   private id: T_UUID;
@@ -79,7 +80,7 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
       !memberID.isAdmin(this.spaceId) &&
       !memberID.getUserId().isEqual(this.authorId)
     )
-      throw new Error('Not allowed');
+      throw new BadRequestException('Not allowed');
     this.changes.setToBeRemoved({ id: this.id });
   }
   isTobeRemove(): boolean {
@@ -88,14 +89,14 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
   }
   setContent(content: string): void {
     if (!this.content) this.content = content;
-    throw new Error('Content already exists');
+    throw new BadRequestException('Content already exists');
   }
   exportChatData(): z.output<typeof chatPersistenceSchema> {
     return chatPersistenceSchema.parse(this.exportPersistence());
   }
   setAuthor(user: IUser): boolean {
     if (!this.authorId.isEqual(user.getId()))
-      throw new Error('chat author not matched with user');
+      throw new BadRequestException('chat author not matched with user');
     this.author = user;
     return true;
   }
@@ -106,7 +107,7 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
         memberID.getUserId().isEqual(this.authorId)
       )
     )
-      throw new Error('Not allowed');
+      throw new BadRequestException('Not allowed');
     return true;
   }
   setReply(chat: IChat): void {
@@ -129,7 +130,7 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
   writeReply(memberID: ISpaceMemberID, chat: IChat): boolean {
     const cond1 = !memberID.isMember(this.spaceId);
     const cond2 = !this.getPostId().isEqual(chat.getPostId());
-    if (cond1 || cond2) throw new Error('Not allowed');
+    if (cond1 || cond2) throw new BadRequestException('Not allowed');
     chat.setReply(this);
     return true;
   }
@@ -158,7 +159,7 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
         memberID.getUserId().isEqual(this.authorId)
       )
     )
-      throw new Error('Not allowed');
+      throw new BadRequestException('Not allowed');
     this.content = content;
     return true;
   }

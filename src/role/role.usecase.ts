@@ -13,11 +13,6 @@ export const createRoleSchema = z.object({
   roleList: roleSchema.array(),
 });
 
-export const deleteRoleSchema = z.object({
-  spaceId: z.string(),
-  roleId: z.string(),
-});
-
 export interface RoleUsecase {
   updateUserRole(
     requesterUuid: T_UUID,
@@ -29,7 +24,7 @@ export interface RoleUsecase {
     requesterUuid: T_UUID,
     spaceUuid: T_UUID,
     roleList: z.infer<typeof roleSchema>[],
-  ): Promise<boolean>;
+  );
   removeRole(
     requeterUuid: T_UUID,
     spaceUuid: T_UUID,

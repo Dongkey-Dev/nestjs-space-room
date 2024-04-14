@@ -271,14 +271,14 @@ class MockUser extends BaseDomain<typeof userSchema> implements IUser {
     this.profileImage = profileImage;
   }
   login(password: string): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
 
   keepPassword(password: string): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   popPassword(): string | false {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setProfile(profile: {
     id?: T_UUID;
@@ -287,7 +287,7 @@ class MockUser extends BaseDomain<typeof userSchema> implements IUser {
     firstName?: string;
     profileImage?: string;
   }): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
 
   getId(): T_UUID {
@@ -315,6 +315,6 @@ class MockUser extends BaseDomain<typeof userSchema> implements IUser {
     profile: { lastName?: string; firstName?: string; profileImage?: string },
     requester: T_UUID,
   ): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
 }

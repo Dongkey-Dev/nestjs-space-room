@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UserDomainModule } from 'src/domain/user/user.domain.module';
 import { UserController } from './user.controller';
-import { UserSerivce } from './user.service';
+import { UserService } from './user.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/util/strategy/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
@@ -30,7 +30,7 @@ import { PassportModule } from '@nestjs/passport';
     },
     {
       provide: 'UserUsecase',
-      useClass: UserSerivce,
+      useClass: UserService,
     },
   ],
 })

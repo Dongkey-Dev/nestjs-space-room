@@ -10,6 +10,8 @@ import {
 import { ISpace } from '../space/space.interface';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 import { randomBytes } from 'crypto';
+import { DomainChange } from '../base/domainChange';
+import { BadRequestException } from '@nestjs/common';
 
 const characters =
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -26,13 +28,13 @@ export class SpaceEntryCode
 
   constructor(data?: z.infer<typeof spaceEntryCodeSchema>) {
     super(spaceEntryCodeSchema);
-    if (!data.id) data.id = new T_UUID();
-    if (!data.code) data.code = this.generateCode();
-    this.import(data);
+    if (data) this.import(data);
+    if (!this.id) this.id = new T_UUID();
+    this.changes = new DomainChange();
   }
   exportCode(role: ISpaceRole): z.output<typeof exportSpaceEntryCodeSchema> {
     if (!this.roleId.isEqual(role.getId()))
-      throw new Error('Role is not matched');
+      throw new BadRequestException('Role is not matched');
     return exportSpaceEntryCodeSchema.parse({
       code: this.code,
       roleName: role.getName(),

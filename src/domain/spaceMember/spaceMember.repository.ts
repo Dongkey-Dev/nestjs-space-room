@@ -29,12 +29,9 @@ export class SpaceMemberRepository implements ISpaceMemberRepository {
   }
 
   async saveMember(member: ISpaceMember): Promise<boolean> {
-    const memberEntity = this.dataSource
-      .getRepository(UserRoleEntity)
-      .create(member.exportSpaceMemberData());
     return await this.dataSource
       .getRepository(UserRoleEntity)
-      .save(memberEntity)
+      .save(member.exportSpaceMemberData())
       .then(() => {
         return true;
       })

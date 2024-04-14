@@ -5,12 +5,12 @@ import {
   Inject,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
   RoleUsecase,
   createRoleSchema,
-  deleteRoleSchema,
   updateRoleSchema,
 } from './role.usecase';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,10 +20,9 @@ import { AuthUser, UserFromToken } from 'src/common/auth.decorator';
 
 class CreateRoleSchema extends createZodDto(createRoleSchema) {}
 class UpdateRoleSchema extends createZodDto(updateRoleSchema) {}
-class DeleteRoleSchema extends createZodDto(deleteRoleSchema) {}
 
 @Controller('role')
-export class SpaceController {
+export class RoleController {
   constructor(
     @Inject('RoleUsecase')
     private readonly roleUsecase: RoleUsecase,
@@ -59,13 +58,14 @@ export class SpaceController {
   @UseGuards(AuthGuard('jwt'))
   @Delete()
   async deleteRole(
-    @Body() dto: DeleteRoleSchema,
+    @Query('spaceId') spaceId: string,
+    @Query('roleId') roleId: string,
     @AuthUser() user: UserFromToken,
   ) {
     return await this.roleUsecase.removeRole(
       new T_UUID(user.id),
-      new T_UUID(dto.spaceId),
-      new T_UUID(dto.roleId),
+      new T_UUID(spaceId),
+      new T_UUID(roleId),
     );
   }
 }

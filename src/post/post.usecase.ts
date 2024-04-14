@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { T_UUID } from 'src/util/uuid';
 import { z } from 'zod';
 
@@ -15,13 +16,10 @@ export const updatePostSchema = z
     content: z.string().optional(),
   })
   .refine((val) => {
-    if (!val.title && !val.content) throw new Error('No update value');
+    if (!val.title && !val.content)
+      throw new BadRequestException('No update value');
     return true;
   });
-
-export const deletePostSchema = z.object({
-  postId: z.string(),
-});
 
 export const createChatSchema = z.object({
   postId: z.string(),
@@ -33,10 +31,6 @@ export const createChatSchema = z.object({
 export const updateChatSchema = z.object({
   chatId: z.string(),
   content: z.string(),
-});
-
-export const deleteChatSchema = z.object({
-  chatId: z.string(),
 });
 
 export interface PostUsecase {

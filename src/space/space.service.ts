@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import {
   SpaceUsecase,
   createSpaceSchema,
@@ -18,9 +18,9 @@ import {
   exportSpaceEntryCodeSchema,
 } from 'src/domain/spaceEntryCode/spaceEntryCode.interface';
 @Injectable()
-export class SpaceSerivce implements SpaceUsecase {
+export class SpaceService implements SpaceUsecase {
   constructor(
-    @Inject('ISpaceUserManager')
+    @Inject('IUserManager')
     private readonly userManager: IUserManager,
     @Inject('ISpaceManager')
     private readonly spaceManager: ISpaceManager,
@@ -31,14 +31,9 @@ export class SpaceSerivce implements SpaceUsecase {
     @Inject('ISpaceEntryCodeManager')
     private readonly spaceEntryCodeManager: ISpaceEntryCodeManager,
   ) {}
-  async create(
-    ownerUuid: T_UUID,
-    dto: z.infer<typeof createSpaceSchema>,
-  ): Promise<z.output<typeof exportSpaceEntryCodeSchema>[]> {
+  async create(ownerUuid: T_UUID, dto: z.infer<typeof createSpaceSchema>) {
     const roleList: ISpaceRole[] = [];
     const space = this.spaceManager.createSpace(dto.name, dto.logo, ownerUuid);
-    space.setLogo(dto.logo);
-    space.setName(dto.name);
     dto.roleList.forEach((role) => {
       const spaceRole = this.spaceRoleManager.createRole(
         space.getId(),
@@ -49,25 +44,37 @@ export class SpaceSerivce implements SpaceUsecase {
     });
 
     await this.spaceManager.applySpace(space);
-    await this.spaceRoleManager.createRoles(roleList);
+    const response = [];
 
-    const response: z.output<typeof exportSpaceEntryCodeSchema>[] = [];
-
-    const entryCodeList: ISpaceEntryCode[] = [];
-    dto.roleList.forEach(async (role) => {
-      const entryCode = await this.spaceEntryCodeManager.createEntryCode();
+    for (const role of dto.roleList) {
       const spaceRole = this.spaceRoleManager.createRole(
         space.getId(),
         role.name,
         role.permission,
       );
+      const entryCode = await this.spaceEntryCodeManager.createEntryCode();
+      await this.spaceRoleManager.applyRole(spaceRole);
       entryCode.setSpaceId(space);
       entryCode.setRoleId(spaceRole);
-      entryCodeList.push(entryCode);
+      await this.spaceEntryCodeManager.applyEntryCode(entryCode);
       response.push(entryCode.exportCode(spaceRole));
-    });
-    return response;
+      if (spaceRole.getPermission() === 'admin') {
+        const member = this.spaceMemberManager.createMember();
+        member.setUserId(ownerUuid);
+        member.setSpaceId(space.getId());
+        member.setRoleId(spaceRole.getId());
+        await this.spaceMemberManager.applyMember(member);
+      }
+    }
+
+    return {
+      roles: response,
+      spaceId: space.getId().exportString(),
+      spaceName: space.getName(),
+      spaceLogo: space.getLogo(),
+    };
   }
+
   async join(userUuid: T_UUID, inviteCode: string): Promise<ISpaceMember> {
     const user = await this.userManager.getDomain(userUuid);
     const entryCode =
@@ -77,6 +84,8 @@ export class SpaceSerivce implements SpaceUsecase {
       user,
       entryCode.getSpaceId(),
     );
+    if (member.getSpaceId()) throw new BadRequestException('Already joined');
+    member.setUserId(user.getId());
     member.setSpaceId(entryCode.getSpaceId());
     member.setRoleId(entryCode.getRoleId());
     await this.spaceMemberManager.applyMember(member);
@@ -93,13 +102,14 @@ export class SpaceSerivce implements SpaceUsecase {
       const space = await this.spaceManager.getSpace(member.getSpaceId());
       const role = await this.spaceRoleManager.getRole(member.getRoleId());
       response.push({
+        spaceId: space.getId().exportString(),
         spaceName: space.getName(),
         spaceLogo: space.getLogo(),
         roleName: role.getName(),
         permission: role.getPermission(),
+        isOwner: space.getOwnerId().isEqual(userUuid),
       });
     }
-
     return response;
   }
 

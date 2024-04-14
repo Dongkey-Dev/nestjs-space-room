@@ -3,7 +3,7 @@ import { DomainManager } from '../base/domainManager';
 import { Space } from './space';
 import { ISpace } from './space.interface';
 import { ISpaceManager } from './space.manager.interface';
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ISpaceRepository } from './space.repository';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class SpaceManager
 
   protected sendToDatabase(toDomain: ISpace): Promise<boolean> {
     const res = this.spaceRepository.saveSpace(toDomain);
-    if (!res) throw new Error('Failed to save space');
+    if (!res) throw new BadRequestException('Failed to save space');
     return res;
   }
   protected async getFromDatabase(
@@ -37,7 +37,7 @@ export class SpaceManager
     return this.spaceRepository.findSpace(entityKey) as Promise<Space>;
   }
   protected getListFromDatabase(entityKey: any, condition?: any) {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   async getSpace(id: T_UUID): Promise<ISpace> {
     return await this.getFromDatabase(id);

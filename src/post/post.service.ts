@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ISpaceManager } from 'src/domain/space/space.manager.interface';
 import { ISpaceMemberManager } from 'src/domain/spaceMember/spaceMember.manager.interface';
 import { ISpaceRoleManager } from 'src/domain/spaceRole/spaceRole.manager.interface';
@@ -9,9 +9,9 @@ import { IPostManager } from 'src/domain/post/post.manager.interface';
 import { SpaceMemberID } from 'src/domain/spaceMemberID/spaceMemberID';
 import { IChatManager } from 'src/domain/chat/chat.manager.interface';
 @Injectable()
-export class PostSerivce implements PostUsecase {
+export class PostService implements PostUsecase {
   constructor(
-    @Inject('ISpaceUserManager')
+    @Inject('IUserManager')
     private readonly userManager: IUserManager,
     @Inject('ISpaceManager')
     private readonly spaceManager: ISpaceManager,
@@ -32,7 +32,7 @@ export class PostSerivce implements PostUsecase {
     );
     const space = await this.spaceManager.getSpace(spaceId);
     if (!member.getSpaceId().isEqual(space.getId()))
-      throw new Error('Invalid Space');
+      throw new BadRequestException('Invalid Space');
     const posts = await this.postManager.getPosts(space);
     return posts.exportPosts();
   }
@@ -72,13 +72,14 @@ export class PostSerivce implements PostUsecase {
     const role = await this.spaceRoleManager.getRole(member.getRoleId());
     const memberId = new SpaceMemberID(member, role);
     if (dto.type === 'notice' && !memberId.isAdmin(spaceId))
-      throw new Error('Not allowed');
+      throw new BadRequestException('Not allowed');
     if (memberId.isAdmin(spaceId) && dto.isAnonymous)
-      throw new Error('admin cannot write anonymous post');
+      throw new BadRequestException('admin cannot write anonymous post');
     const post = await this.postManager.createPost(
       user,
       dto.content,
       dto.title,
+      spaceId,
       dto.isAnonymous,
     );
     return post.exportResponseData(memberId);

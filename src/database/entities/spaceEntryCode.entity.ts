@@ -31,7 +31,7 @@ export class SpaceEntryCodeEntity {
   @Column({ type: 'binary', length: 16, name: 'role_id', nullable: true })
   roleId: Buffer;
 
-  @ManyToOne(() => SpaceRoleEntity)
+  @ManyToOne(() => SpaceRoleEntity, { nullable: true })
   @JoinColumn({ name: 'role_id' })
   role: SpaceRoleEntity;
 

@@ -52,13 +52,13 @@ class MockPost implements IPost {
     createdAt?: Date;
     updatedAt?: Date;
   } {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   changeTitle(requester: T_UUID, title: string): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   changeContent(requester: T_UUID, content: string): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   exportPostData(): {
     id?: Buffer;
@@ -69,35 +69,35 @@ class MockPost implements IPost {
     content?: string;
     authorId?: Buffer;
   } {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setTobeRemove(memberId: ISpaceMemberID): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   isTobeRemove(): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   chnageTitle(requester: T_UUID, title: string): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   chnageContent(requester: T_UUID, content: string): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setTitle(title: string): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setContent(content: string): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setAnonymous(): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setRanking(ranking: number): boolean {
     this.ranking = ranking;
     return true;
   }
   getRanking(): number {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getSpaceId(): T_UUID {
     return this.spaceId;
@@ -120,7 +120,7 @@ class MockPost implements IPost {
     return this.content;
   }
   setAuthor(author: IUser): boolean {
-    if (this.author) throw new Error('Author is already set');
+    if (this.author) throw new BadRequestException('Author is already set');
     this.author = author;
     return true;
   }
@@ -128,10 +128,10 @@ class MockPost implements IPost {
     return this.authorId;
   }
   getAuthorProfile(requester: ISpaceMemberID): z.infer<typeof profileSchema> {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getCreatedAt(): Date {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getUpdatedAt(): Date {
     return this.updatedAt;
@@ -146,7 +146,7 @@ class MockPost implements IPost {
     return this.title;
   }
   changeTypeNotice(spaceMember: ISpaceMemberID): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
 }
 
@@ -232,14 +232,14 @@ class MockUser implements IUser {
     this.profileImage = profileImage;
   }
   login(password: string): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
 
   keepPassword(password: string): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   popPassword(): string {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setProfile(profile: {
     id?: T_UUID;
@@ -259,17 +259,17 @@ class MockUser implements IUser {
     firstName?: string;
     profileImage?: string;
   } {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getId(): T_UUID {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   updateProfile(profile: {
     lastName?: string;
     firstName?: string;
     profileImage?: string;
   }): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getProfile(): z.infer<typeof profileSchema> {
     return {

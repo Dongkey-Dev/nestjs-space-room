@@ -34,15 +34,19 @@ export class PostManager extends DomainManager<Post> implements IPostManager {
     writer: IUser,
     content: string,
     title: string,
+    spaceId: T_UUID,
     isAnonymous?: boolean,
   ): Promise<IPost> {
     const post = this.createDomain();
     post.setAuthor(writer);
     post.setContent(content);
     post.setTitle(title);
+    post.setSpaceId(spaceId);
     if (isAnonymous) {
       post.setAnonymous();
     }
+    post.setTotalChats(0);
+    post.setTotalParticipants(0);
     await this.sendToDatabase(post);
     return post;
   }

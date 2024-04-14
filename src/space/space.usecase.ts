@@ -1,4 +1,3 @@
-import { ISpace } from 'src/domain/space/space.interface';
 import { exportSpaceEntryCodeSchema } from 'src/domain/spaceEntryCode/spaceEntryCode.interface';
 import { ISpaceMember } from 'src/domain/spaceMember/spaceMember.interface';
 import { permissionEnum } from 'src/domain/spaceRole/spaceRole.interface';
@@ -9,16 +8,6 @@ export const roleSchema = z.object({
   name: z.string(),
   permission: permissionEnum,
 });
-
-const checkRoleRefine = (val: any) => {
-  val.roleList.length > 1 &&
-    val.roleList.some((role) => role.permission === 'admin') &&
-    val.roleList.some((role) => role.permission === 'member') &&
-    val.roleList.some((role) => role.permission === 'owner'),
-    {
-      message: 'roleList must have admin, member, owner permission',
-    };
-};
 
 export const joinedSpaceResponseSchema = z
   .object({
@@ -33,10 +22,14 @@ export const createSpaceSchema = z
   .object({
     name: z.string(),
     logo: z.string(),
-    ownerId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
     roleList: roleSchema.array(),
   })
-  .refine(checkRoleRefine);
+  .refine((val) => {
+    val.roleList.length > 1 &&
+      val.roleList.some((role) => role.permission === 'admin') &&
+      val.roleList.some((role) => role.permission === 'member');
+    return true;
+  });
 
 export const joinSpaceSchema = z.object({
   inviteCode: z.string(),
@@ -52,10 +45,7 @@ export const changeOwnerSchema = z.object({
 });
 
 export interface SpaceUsecase {
-  create(
-    ownerUuid: T_UUID,
-    dto: z.infer<typeof createSpaceSchema>,
-  ): Promise<z.output<typeof exportSpaceEntryCodeSchema>[]>;
+  create(ownerUuid: T_UUID, dto: z.infer<typeof createSpaceSchema>);
   join(userUuid: T_UUID, inviteCode: string): Promise<ISpaceMember>;
   getJoinedSpaces(
     userUuid: T_UUID,

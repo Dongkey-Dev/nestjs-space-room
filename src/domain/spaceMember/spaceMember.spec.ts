@@ -56,10 +56,10 @@ describe('SpaceMember', () => {
 
 class MockSpaceRole implements ISpaceRole {
   checkRemovableNoUse(member: ISpaceMember): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getName(): string {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   exportSpaceRoleData(): {
     id: Buffer;
@@ -67,19 +67,19 @@ class MockSpaceRole implements ISpaceRole {
     name: string;
     isAdmin: boolean;
   } {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   isTobeRemove(): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setSpaceId(spaceId: T_UUID): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setTobeRemove(): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getSpaceId(): T_UUID {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   id: T_UUID;
   setId(id: T_UUID): boolean {
@@ -90,16 +90,16 @@ class MockSpaceRole implements ISpaceRole {
     return this.id;
   }
   getRole(): string {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setRole(role: string): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getPermission(): 'admin' | 'member' {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setPermission(permission: 'admin' | 'member'): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
 }
 
@@ -109,28 +109,28 @@ class MockSpace implements ISpace {
     this.ownerId = ownerId;
   }
   getId(): T_UUID {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setTobeRemove(requeser: T_UUID): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getName(): string {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setName(name: string): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   changeName(name: string, ownerMember: ISpaceMember): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getLogo(): string {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   changeLogo(logo: string, ownerMember: ISpaceMember): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   setLogo(logo: string): void {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   getOwnerId(): T_UUID {
     return this.ownerId;
@@ -139,10 +139,10 @@ class MockSpace implements ISpace {
     oldOwnerMember: ISpaceMember,
     newOwnerMember: ISpaceMember,
   ): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   removeRole(requester: T_UUID, spaceRole: ISpaceRole): boolean {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
   exportSpaceData(): {
     id?: Buffer;
@@ -150,6 +150,6 @@ class MockSpace implements ISpace {
     logo?: string;
     ownerId?: Buffer;
   } {
-    throw new Error('Method not implemented.');
+    throw new BadRequestException('Method not implemented.');
   }
 }

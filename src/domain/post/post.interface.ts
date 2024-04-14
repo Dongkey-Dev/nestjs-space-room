@@ -25,9 +25,13 @@ export const postSchema = z.object({
 });
 
 export const postResponseSchema = z.object({
-  id: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
+  id: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportString()),
   type: z.string(),
-  spaceId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
+  spaceId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportString()),
   isAnonymous: z.boolean(),
   title: z.string(),
   content: z.string(),
@@ -52,6 +56,8 @@ export const postPersistenceSchema = z.object({
   authorId: z
     .custom<IUUIDTransable>()
     .transform((val) => new T_UUID(val).exportBuffer()),
+  totalComments: z.number().default(0),
+  totalParticipants: z.number().default(0),
 });
 
 export interface IPost {
@@ -91,6 +97,7 @@ export interface IPost {
   getRanking(): number;
 
   setAnonymous(): void;
+  setSpaceId(spaceId: T_UUID): void;
 }
 
 export const exportPostsSchema = z

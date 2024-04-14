@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SpaceEntryCodeManager } from './spaceEntryCode.manager';
+import { SpaceEntryCodeRepository } from './spaceEntryCode.repository';
 
 @Module({
   providers: [
@@ -9,7 +10,7 @@ import { SpaceEntryCodeManager } from './spaceEntryCode.manager';
     },
     {
       provide: 'ISpaceEntryCodeRepository',
-      useClass: SpaceEntryCodeManager,
+      useClass: SpaceEntryCodeRepository,
     },
   ],
   exports: ['ISpaceEntryCodeManager', 'ISpaceEntryCodeRepository'],
