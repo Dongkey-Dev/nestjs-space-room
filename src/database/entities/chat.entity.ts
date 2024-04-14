@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryColumn,
@@ -10,12 +11,21 @@ import {
 } from 'typeorm';
 import { PostEntity } from './post.entity';
 import { UserEntity } from './user.entity';
+import { SpaceEntity } from './space.entity';
 
 @Entity('chat')
 export class ChatEntity {
   @PrimaryColumn({ type: 'binary', length: 16, generated: false })
   id: Buffer;
 
+  @Column({ type: 'binary', length: 16, name: 'space_id' })
+  spaceId: Buffer;
+
+  @ManyToOne(() => SpaceEntity)
+  @JoinColumn({ name: 'space_id' })
+  space: SpaceEntity;
+
+  @Index()
   @Column({ type: 'binary', length: 16, name: 'post_id' })
   postId: Buffer;
 
@@ -23,6 +33,7 @@ export class ChatEntity {
   @JoinColumn({ name: 'post_id' })
   post: PostEntity;
 
+  @Index()
   @Column({ type: 'binary', length: 16, name: 'author_id' })
   authorId: Buffer;
 
@@ -30,8 +41,8 @@ export class ChatEntity {
   @JoinColumn({ name: 'author_id' })
   author: UserEntity;
 
-  @Column({ type: 'binary', length: 16, nullable: true, name: 'parent_id' })
-  parentId: Buffer;
+  @Column({ type: 'binary', length: 16, nullable: true, name: 'previous_id' })
+  previousId: Buffer;
 
   @Column({ name: 'is_anonymous' })
   isAnonymous: boolean;

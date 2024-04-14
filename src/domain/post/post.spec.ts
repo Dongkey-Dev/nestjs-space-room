@@ -4,6 +4,130 @@ import { IUser, profileSchema } from '../user/user.interface';
 import { z } from 'zod';
 import { Post, PostList } from './post';
 import { IPost } from './post.interface';
+class MockPost implements IPost {
+  private id: T_UUID;
+  private type: 'notice' | 'question' = 'question';
+  private spaceId: T_UUID;
+  private isAnonymous: boolean;
+  private title: string;
+  private content: string;
+  private authorId: T_UUID;
+  private author?: IUser;
+  private createdAt: Date;
+  private updatedAt: Date;
+
+  private totalComments?: number = 0;
+  private totalParticipants?: number = 0;
+  private ranking?: number;
+  constructor(
+    spaceId: T_UUID,
+    isAnonymous: boolean,
+    title: string,
+    content: string,
+    authorId: T_UUID,
+    totalComments: number = 0,
+    totalParticipants: number = 0,
+  ) {
+    this.id = new T_UUID();
+    this.spaceId = spaceId;
+    this.isAnonymous = isAnonymous;
+    this.title = title;
+    this.content = content;
+    this.authorId = authorId;
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
+    this.totalComments = totalComments;
+    this.totalParticipants = totalParticipants;
+  }
+  exportPostData(): {
+    id?: Buffer;
+    type?: string;
+    spaceId?: Buffer;
+    isAnonymous?: boolean;
+    title?: string;
+    content?: string;
+    authorId?: Buffer;
+  } {
+    throw new Error('Method not implemented.');
+  }
+  setTobeRemove(memberId: ISpaceMemberID): void {
+    throw new Error('Method not implemented.');
+  }
+  isTobeRemove(): boolean {
+    throw new Error('Method not implemented.');
+  }
+  chnageTitle(requester: T_UUID, title: string): boolean {
+    throw new Error('Method not implemented.');
+  }
+  chnageContent(requester: T_UUID, content: string): boolean {
+    throw new Error('Method not implemented.');
+  }
+  setTitle(title: string): void {
+    throw new Error('Method not implemented.');
+  }
+  setContent(content: string): void {
+    throw new Error('Method not implemented.');
+  }
+  setAnonymous(): void {
+    throw new Error('Method not implemented.');
+  }
+  setRanking(ranking: number): boolean {
+    this.ranking = ranking;
+    return true;
+  }
+  getRanking(): number {
+    throw new Error('Method not implemented.');
+  }
+  getSpaceId(): T_UUID {
+    return this.spaceId;
+  }
+  setTotalChats(totalComments: number): boolean {
+    this.totalComments = totalComments;
+    return true;
+  }
+  setTotalParticipants(totalParticipants: number): boolean {
+    this.totalParticipants = totalParticipants;
+    return true;
+  }
+  getTotalChats(): number {
+    return this.totalComments;
+  }
+  getTotalParticipants(): number {
+    return this.totalParticipants;
+  }
+  getContent(): string {
+    return this.content;
+  }
+  setAuthor(author: IUser): boolean {
+    if (this.author) throw new Error('Author is already set');
+    this.author = author;
+    return true;
+  }
+  getAuthorId(): T_UUID {
+    return this.authorId;
+  }
+  getAuthorProfile(requester: ISpaceMemberID): z.infer<typeof profileSchema> {
+    throw new Error('Method not implemented.');
+  }
+  getCreatedAt(): Date {
+    throw new Error('Method not implemented.');
+  }
+  getUpdatedAt(): Date {
+    return this.updatedAt;
+  }
+  getId(): T_UUID {
+    return this.id;
+  }
+  getType(): 'notice' | 'question' {
+    return this.type;
+  }
+  getTitle(): string {
+    return this.title;
+  }
+  changeTypeNotice(spaceMember: ISpaceMemberID): boolean {
+    throw new Error('Method not implemented.');
+  }
+}
 
 class MockOwnerID implements ISpaceMemberID {
   userId: T_UUID;
@@ -135,6 +259,44 @@ class MockUser implements IUser {
   }
 }
 
+describe('PostList', () => {
+  let postList: PostList;
+  let wrongPostList: PostList;
+  const postId = new T_UUID();
+  const posts = [
+    new MockPost(postId, false, 'test', 'test', new T_UUID(), 8, 4),
+    new MockPost(postId, false, 'test', 'test', new T_UUID(), 10, 5),
+    new MockPost(postId, false, 'test', 'test', new T_UUID(), 10, 4),
+  ];
+  const wrongPosts = [
+    new MockPost(new T_UUID(), false, 'test', 'test', new T_UUID(), 10, 5),
+    new MockPost(new T_UUID(), false, 'test', 'test', new T_UUID(), 10, 4),
+    new MockPost(new T_UUID(), false, 'test', 'test', new T_UUID(), 8, 4),
+  ];
+
+  beforeEach(() => {
+    postList = new PostList(posts);
+  });
+
+  it('생성 확인', () => {
+    expect(postList).toBeTruthy();
+  });
+
+  it('서로 다른 posts는 PostList가 될 수 없다.', () => {
+    expect(() => (wrongPostList = new PostList(wrongPosts))).toThrow();
+  });
+
+  it('게시글 rank를 매겼을 때, 순서 확인', () => {
+    const rankedPosts = postList.getPosts();
+    expect(rankedPosts[0].getTotalChats()).toEqual(10);
+    expect(rankedPosts[0].getTotalParticipants()).toEqual(5);
+    expect(rankedPosts[1].getTotalChats()).toEqual(10);
+    expect(rankedPosts[1].getTotalParticipants()).toEqual(4);
+    expect(rankedPosts[2].getTotalChats()).toEqual(8);
+    expect(rankedPosts[2].getTotalParticipants()).toEqual(4);
+  });
+});
+
 describe('Post', () => {
   let post: IPost;
   const authorId = new T_UUID();
@@ -222,135 +384,5 @@ describe('Post', () => {
     const omitEmail = { ...mockUserData };
     delete omitEmail.email;
     expect(post.getAuthorProfile(mockMemberID)).toEqual(omitEmail);
-  });
-});
-
-class MockPost implements IPost {
-  private id: T_UUID;
-  private type: 'notice' | 'question' = 'question';
-  private spaceId: T_UUID;
-  private isAnonymous: boolean;
-  private title: string;
-  private content: string;
-  private authorId: T_UUID;
-  private author?: IUser;
-  private createdAt: Date;
-  private updatedAt: Date;
-
-  private totalComments?: number = 0;
-  private totalParticipants?: number = 0;
-  private ranking?: number;
-  constructor(
-    spaceId: T_UUID,
-    isAnonymous: boolean,
-    title: string,
-    content: string,
-    authorId: T_UUID,
-    totalComments: number = 0,
-    totalParticipants: number = 0,
-  ) {
-    this.id = new T_UUID();
-    this.spaceId = spaceId;
-    this.isAnonymous = isAnonymous;
-    this.title = title;
-    this.content = content;
-    this.authorId = authorId;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
-    this.totalComments = totalComments;
-    this.totalParticipants = totalParticipants;
-  }
-  setRanking(ranking: number): boolean {
-    this.ranking = ranking;
-    return true;
-  }
-  getRanking(): number {
-    throw new Error('Method not implemented.');
-  }
-  getSpaceId(): T_UUID {
-    return this.spaceId;
-  }
-  setTotalChats(totalComments: number): boolean {
-    this.totalComments = totalComments;
-    return true;
-  }
-  setTotalParticipants(totalParticipants: number): boolean {
-    this.totalParticipants = totalParticipants;
-    return true;
-  }
-  getTotalChats(): number {
-    return this.totalComments;
-  }
-  getTotalParticipants(): number {
-    return this.totalParticipants;
-  }
-  getContent(): string {
-    return this.content;
-  }
-  setAuthor(author: IUser): boolean {
-    if (this.author) throw new Error('Author is already set');
-    this.author = author;
-    return true;
-  }
-  getAuthorId(): T_UUID {
-    return this.authorId;
-  }
-  getAuthorProfile(requester: ISpaceMemberID): z.infer<typeof profileSchema> {
-    throw new Error('Method not implemented.');
-  }
-  getCreatedAt(): Date {
-    throw new Error('Method not implemented.');
-  }
-  getUpdatedAt(): Date {
-    return this.updatedAt;
-  }
-  getId(): T_UUID {
-    return this.id;
-  }
-  getType(): 'notice' | 'question' {
-    return this.type;
-  }
-  getTitle(): string {
-    return this.title;
-  }
-  changeTypeNotice(spaceMember: ISpaceMemberID): boolean {
-    throw new Error('Method not implemented.');
-  }
-}
-
-describe('PostList', () => {
-  let postList: PostList;
-  const postId = new T_UUID();
-  const posts = [
-    new MockPost(postId, false, 'test', 'test', new T_UUID(), 8, 4),
-    new MockPost(postId, false, 'test', 'test', new T_UUID(), 10, 5),
-    new MockPost(postId, false, 'test', 'test', new T_UUID(), 10, 4),
-  ];
-  const wrongPosts = [
-    new MockPost(new T_UUID(), false, 'test', 'test', new T_UUID(), 10, 5),
-    new MockPost(new T_UUID(), false, 'test', 'test', new T_UUID(), 10, 4),
-    new MockPost(new T_UUID(), false, 'test', 'test', new T_UUID(), 8, 4),
-  ];
-
-  beforeEach(() => {
-    postList = new PostList(posts);
-  });
-
-  it('생성 확인', () => {
-    expect(postList).toBeTruthy();
-  });
-
-  it('서로 다른 posts는 PostList가 될 수 없다.', () => {
-    expect(() => (wrongPostList = new PostList(wrongPosts))).toThrow();
-  });
-
-  it('게시글 rank를 매겼을 때, 순서 확인', () => {
-    const rankedPosts = postList.getPosts();
-    expect(rankedPosts[0].getTotalChats()).toEqual(10);
-    expect(rankedPosts[0].getTotalParticipants()).toEqual(5);
-    expect(rankedPosts[1].getTotalChats()).toEqual(10);
-    expect(rankedPosts[1].getTotalParticipants()).toEqual(4);
-    expect(rankedPosts[2].getTotalChats()).toEqual(8);
-    expect(rankedPosts[2].getTotalParticipants()).toEqual(4);
   });
 });

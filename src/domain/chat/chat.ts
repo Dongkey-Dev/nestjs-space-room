@@ -14,9 +14,9 @@ export class Chat extends BaseDomain<typeof chatSchema> implements IChat {
   private prevChatId?: T_UUID;
   private isAnonymous: boolean;
   private author: IUser;
-  constructor(data: z.infer<typeof chatSchema>) {
+  constructor(data?: z.infer<typeof chatSchema>) {
     super(chatSchema);
-    this.import(data);
+    if (data) this.import(data);
     if (!this.id) this.id = new T_UUID();
   }
   setAuthor(user: IUser): boolean {

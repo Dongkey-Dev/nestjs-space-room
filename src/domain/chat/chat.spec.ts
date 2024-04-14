@@ -4,28 +4,6 @@ import { Chat } from './chat';
 import { ISpaceMemberID } from '../spaceMemberID/spaceMemberID.interface';
 import { BaseDomain } from '../base/baseDomain';
 
-class MockSpaceMember implements ISpaceMemberID {
-  userId: T_UUID;
-  spaceId: T_UUID;
-  constructor(userId: T_UUID, spaceId: T_UUID) {
-    this.userId = userId;
-    this.spaceId = spaceId;
-  }
-  getUserId(): T_UUID {
-    return this.userId;
-  }
-  isOwner(spaceId: T_UUID): boolean {
-    return false;
-  }
-  isAdmin(spaceId: T_UUID): boolean {
-    return false;
-  }
-  isMember(spaceId: T_UUID): boolean {
-    if (this.spaceId.isEqual(spaceId)) return true;
-    return false;
-  }
-}
-
 class MockSpaceAdmin implements ISpaceMemberID {
   userId: T_UUID;
   spaceId: T_UUID;
@@ -49,67 +27,25 @@ class MockSpaceAdmin implements ISpaceMemberID {
   }
 }
 
-class MockUser extends BaseDomain<typeof userSchema> implements IUser {
-  id: T_UUID;
-  email: string;
-  lastName: string;
-  firstName: string;
-  profileImage: string;
-
-  constructor(id, email, lastName, firstName, profileImage) {
-    super(userSchema);
-    this.id = id;
-    this.email = email;
-    this.lastName = lastName;
-    this.firstName = firstName;
-    this.profileImage = profileImage;
+class MockSpaceMember implements ISpaceMemberID {
+  userId: T_UUID;
+  spaceId: T_UUID;
+  constructor(userId: T_UUID, spaceId: T_UUID) {
+    this.userId = userId;
+    this.spaceId = spaceId;
   }
-  login(password: string): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  getUserId(): T_UUID {
+    return this.userId;
   }
-
-  keepPassword(password: string): void {
-    throw new Error('Method not implemented.');
+  isOwner(spaceId: T_UUID): boolean {
+    return false;
   }
-  popPassword(): string | false {
-    throw new Error('Method not implemented.');
+  isAdmin(spaceId: T_UUID): boolean {
+    return false;
   }
-  setProfile(profile: {
-    id?: T_UUID;
-    email?: string;
-    lastName?: string;
-    firstName?: string;
-    profileImage?: string;
-  }): boolean {
-    throw new Error('Method not implemented.');
-  }
-
-  getId(): T_UUID {
-    return this.id;
-  }
-  getProfile(requester?: T_UUID) {
-    return {
-      lastName: this.lastName,
-      firstName: this.firstName,
-      profileImage: this.profileImage,
-    };
-  }
-  getAnonymousProfile(): {
-    lastName?: string;
-    firstName?: string;
-    profileImage?: string;
-  } {
-    return {
-      lastName: 'anonymous',
-      firstName: 'anonymous',
-      profileImage: 'anonymous.png',
-    };
-  }
-  updateProfile(
-    profile: { lastName?: string; firstName?: string; profileImage?: string },
-    requester: T_UUID,
-  ): boolean {
-    throw new Error('Method not implemented.');
+  isMember(spaceId: T_UUID): boolean {
+    if (this.spaceId.isEqual(spaceId)) return true;
+    return false;
   }
 }
 
@@ -318,3 +254,67 @@ describe('chat', () => {
     expect(() => anonChat.changeContent(adminID1, 'new content')).toThrow();
   });
 });
+
+class MockUser extends BaseDomain<typeof userSchema> implements IUser {
+  id: T_UUID;
+  email: string;
+  lastName: string;
+  firstName: string;
+  profileImage: string;
+
+  constructor(id, email, lastName, firstName, profileImage) {
+    super(userSchema);
+    this.id = id;
+    this.email = email;
+    this.lastName = lastName;
+    this.firstName = firstName;
+    this.profileImage = profileImage;
+  }
+  login(password: string): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
+
+  keepPassword(password: string): void {
+    throw new Error('Method not implemented.');
+  }
+  popPassword(): string | false {
+    throw new Error('Method not implemented.');
+  }
+  setProfile(profile: {
+    id?: T_UUID;
+    email?: string;
+    lastName?: string;
+    firstName?: string;
+    profileImage?: string;
+  }): boolean {
+    throw new Error('Method not implemented.');
+  }
+
+  getId(): T_UUID {
+    return this.id;
+  }
+  getProfile(requester?: T_UUID) {
+    return {
+      lastName: this.lastName,
+      firstName: this.firstName,
+      profileImage: this.profileImage,
+    };
+  }
+  getAnonymousProfile(): {
+    lastName?: string;
+    firstName?: string;
+    profileImage?: string;
+  } {
+    return {
+      lastName: 'anonymous',
+      firstName: 'anonymous',
+      profileImage: 'anonymous.png',
+    };
+  }
+  updateProfile(
+    profile: { lastName?: string; firstName?: string; profileImage?: string },
+    requester: T_UUID,
+  ): boolean {
+    throw new Error('Method not implemented.');
+  }
+}
