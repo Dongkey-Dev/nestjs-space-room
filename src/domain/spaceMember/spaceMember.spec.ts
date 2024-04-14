@@ -3,6 +3,20 @@ import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 import { SpaceMember } from './spaceMember';
 
 class MockSpaceRole implements ISpaceRole {
+  exportSpaceRoleData(): {
+    id: Buffer;
+    spaceId: Buffer;
+    name: string;
+    isAdmin: boolean;
+  } {
+    throw new Error('Method not implemented.');
+  }
+  isTobeRemove(): boolean {
+    throw new Error('Method not implemented.');
+  }
+  setSpaceId(spaceId: T_UUID): void {
+    throw new Error('Method not implemented.');
+  }
   setTobeRemove(): boolean {
     throw new Error('Method not implemented.');
   }

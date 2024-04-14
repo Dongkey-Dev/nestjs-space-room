@@ -13,6 +13,9 @@ class MockSpaceMember implements ISpaceMember {
     this.userId = userId;
     this.roleId = roleId;
   }
+  getId(): T_UUID {
+    throw new Error('Method not implemented.');
+  }
   exportSpaceMemberData(): {
     id?: Buffer;
     spaceId?: Buffer;
@@ -58,6 +61,26 @@ class MockSpaceRole implements ISpaceRole {
     this.spaceId = spaceId;
     this.id = id;
     this.permission = permission;
+  }
+  exportSpaceRoleData(): {
+    id: Buffer;
+    spaceId: Buffer;
+    name: string;
+    isAdmin: boolean;
+  } {
+    throw new Error('Method not implemented.');
+  }
+  isTobeRemove(): boolean {
+    throw new Error('Method not implemented.');
+  }
+  setSpaceId(spaceId: T_UUID): void {
+    throw new Error('Method not implemented.');
+  }
+  setRole(roleName: string): void {
+    throw new Error('Method not implemented.');
+  }
+  setPermission(permission: 'admin' | 'member'): void {
+    throw new Error('Method not implemented.');
   }
   setTobeRemove(): boolean {
     throw new Error('Method not implemented.');
