@@ -26,7 +26,7 @@ export class SpaceEntity {
   @Column({ type: 'binary', length: 16, name: 'owner_id' })
   ownerId: Buffer;
 
-  @ManyToOne(() => UserEntity, { nullable: false })
+  @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'owner_id' })
   owner: UserEntity;
 
