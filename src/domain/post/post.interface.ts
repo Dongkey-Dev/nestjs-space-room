@@ -3,16 +3,16 @@ import { IUser, profileSchema, userSchema } from '../user/user.interface';
 import { IUUIDTransable, T_UUID } from 'src/util/uuid';
 import { ISpaceMemberID } from '../spaceMemberID/spaceMemberID.interface';
 
-export const postType = z.enum(['notice', 'question']).default('question');
 export const anonymousProfile: z.infer<typeof profileSchema> = {
   lastName: 'anonymous',
   firstName: 'anonymous',
   profileImage: 'anonymous.png',
 };
 export const postSchema = z.object({
-  type: postType,
+  id: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
+  type: z.string(),
   spaceId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
-  isAnon: z.boolean(),
+  isAnonymous: z.boolean(),
   title: z.string(),
   content: z.string(),
   authorId: z.custom<IUUIDTransable>().transform((val) => new T_UUID(val)),
@@ -20,17 +20,45 @@ export const postSchema = z.object({
   totalComments: z.number().default(0),
   totalParticipants: z.number().default(0),
   ranking: z.number().default(0),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export const postPersistenceSchema = z.object({
+  id: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+  type: z.string(),
+  spaceId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
+  isAnonymous: z.boolean(),
+  title: z.string(),
+  content: z.string(),
+  authorId: z
+    .custom<IUUIDTransable>()
+    .transform((val) => new T_UUID(val).exportBuffer()),
 });
 
 export interface IPost {
+  exportPostData(): z.infer<typeof postPersistenceSchema>;
+  setTobeRemove(memberId: ISpaceMemberID): void;
+  isTobeRemove(): boolean;
+
   getId(): T_UUID;
-  getType(): 'notice' | 'question';
+  getType(): string;
   getSpaceId(): T_UUID;
   changeTypeNotice(spaceMember: ISpaceMemberID): boolean;
+
+  chnageTitle(requester: T_UUID, title: string): boolean;
+  chnageContent(requester: T_UUID, content: string): boolean;
+
   getTitle(): string;
+  setTitle(title: string): void;
+
   getContent(): string;
+  setContent(content: string): void;
+
   getCreatedAt(): Date;
   getUpdatedAt(): Date;
 
@@ -44,6 +72,8 @@ export interface IPost {
   setTotalParticipants(totalParticipants: number): boolean;
   setRanking(ranking: number): boolean;
   getRanking(): number;
+
+  setAnonymous(): void;
 }
 
 export interface IPostList {

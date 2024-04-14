@@ -85,6 +85,7 @@ export class SpaceRoleRepository implements ISpaceRoleRepository {
   }
 
   private entityToDomain(entity: SpaceRoleEntity): ISpaceRole {
+    if (!entity) return new SpaceRole();
     const role = new SpaceRole({
       id: new T_UUID(entity.id),
       spaceId: new T_UUID(entity.spaceId),

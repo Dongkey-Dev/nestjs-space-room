@@ -136,7 +136,7 @@ class MockUser implements IUser {
 }
 
 describe('Post', () => {
-  let post: Post;
+  let post: IPost;
   const authorId = new T_UUID();
   const mockOwnerID = new MockOwnerID(new T_UUID(), new T_UUID());
   const mockAdminID = new MockAdminID(new T_UUID(), new T_UUID());
@@ -160,7 +160,7 @@ describe('Post', () => {
     post = new Post({
       type: 'question',
       spaceId: new T_UUID(),
-      isAnon: false,
+      isAnonymous: false,
       title: 'test',
       content: 'test',
       authorId: authorId,
@@ -229,7 +229,7 @@ class MockPost implements IPost {
   private id: T_UUID;
   private type: 'notice' | 'question' = 'question';
   private spaceId: T_UUID;
-  private isAnon: boolean;
+  private isAnonymous: boolean;
   private title: string;
   private content: string;
   private authorId: T_UUID;
@@ -242,7 +242,7 @@ class MockPost implements IPost {
   private ranking?: number;
   constructor(
     spaceId: T_UUID,
-    isAnon: boolean,
+    isAnonymous: boolean,
     title: string,
     content: string,
     authorId: T_UUID,
@@ -251,7 +251,7 @@ class MockPost implements IPost {
   ) {
     this.id = new T_UUID();
     this.spaceId = spaceId;
-    this.isAnon = isAnon;
+    this.isAnonymous = isAnonymous;
     this.title = title;
     this.content = content;
     this.authorId = authorId;
@@ -319,7 +319,6 @@ class MockPost implements IPost {
 }
 
 describe('PostList', () => {
-  let wrongPostList: PostList;
   let postList: PostList;
   const postId = new T_UUID();
   const posts = [

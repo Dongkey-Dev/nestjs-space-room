@@ -75,6 +75,7 @@ export class SpaceMemberRepository implements ISpaceMemberRepository {
   }
 
   private entityToDomain(entity: UserRoleEntity): ISpaceMember {
+    if (!entity) return new SpaceMember();
     return new SpaceMember({
       id: entity.id,
       userId: entity.userId,

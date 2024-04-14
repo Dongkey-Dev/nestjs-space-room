@@ -5,8 +5,8 @@ import {
   IPost,
   IPostList,
   anonymousProfile,
+  postPersistenceSchema,
   postSchema,
-  postType,
 } from './post.interface';
 import { IUser, userSchema } from '../user/user.interface';
 import { ISpaceMemberID } from '../spaceMemberID/spaceMemberID.interface';
@@ -57,14 +57,11 @@ export class PostList implements IPostList {
   }
 }
 
-export class Post
-  extends BaseDomain<typeof postSchema>
-  implements BaseDomain<typeof postSchema>, IPost
-{
+export class Post extends BaseDomain<typeof postSchema> implements IPost {
   private id: T_UUID;
-  private type: z.infer<typeof postType> = 'question';
+  private type: string;
   private spaceId: T_UUID;
-  private isAnon: boolean;
+  private isAnonymous: boolean;
   private title: string;
   private content: string;
   private authorId: T_UUID;
@@ -75,10 +72,51 @@ export class Post
   private totalComments?: number = 0;
   private totalParticipants?: number = 0;
   private ranking?: number;
-  constructor(data: z.input<typeof postSchema>) {
+  constructor(data?: z.input<typeof postSchema>) {
     super(postSchema);
-    this.import(data);
+    if (data) this.import(data);
     if (!this.id) this.id = new T_UUID();
+  }
+  isTobeRemove(): boolean {
+    if (this.changes.exportToBeRemoved()) return true;
+    return false;
+  }
+  setTobeRemove(memberId: ISpaceMemberID): void {
+    if (
+      this.authorId.isEqual(memberId.getUserId()) ||
+      memberId.isAdmin(this.spaceId)
+    ) {
+      this.changes.setToBeRemoved({ id: this.id });
+    }
+    throw new Error('Only author or admin can remove post');
+  }
+  setAnonymous(): void {
+    this.isAnonymous = true;
+  }
+  chnageTitle(requester: T_UUID, title: string): boolean {
+    if (requester.isEqual(this.authorId)) {
+      this.title = title;
+      return true;
+    }
+    throw new Error('Only author can change title');
+  }
+  chnageContent(requester: T_UUID, content: string): boolean {
+    if (requester.isEqual(this.authorId)) {
+      this.content = content;
+      return true;
+    }
+    throw new Error('Only author can change content');
+  }
+  setTitle(title: string): void {
+    if (this.title) throw new Error('Title is already set');
+    this.title = title;
+  }
+  setContent(content: string): void {
+    if (this.content) throw new Error('Content is already set');
+    this.content = content;
+  }
+  exportPostData(): z.infer<typeof postPersistenceSchema> {
+    return postPersistenceSchema.parse(this.exportPersistence());
   }
   getSpaceId(): T_UUID {
     return this.spaceId;
@@ -109,7 +147,7 @@ export class Post
     return this.authorId;
   }
   getAuthorProfile(requester: ISpaceMemberID): z.infer<typeof userSchema> {
-    if (this.isAnon && !requester.isAdmin(this.spaceId))
+    if (this.isAnonymous && !requester.isAdmin(this.spaceId))
       return anonymousProfile;
     return this.author.getProfile();
   }
@@ -122,7 +160,7 @@ export class Post
   getId(): T_UUID {
     return this.id;
   }
-  getType(): 'notice' | 'question' {
+  getType(): string {
     return this.type;
   }
   getTitle(): string {
