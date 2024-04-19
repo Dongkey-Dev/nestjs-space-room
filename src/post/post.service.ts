@@ -26,11 +26,10 @@ export class PostService implements PostUsecase {
   ) {}
   async getPostAll(requester: T_UUID, spaceId: T_UUID) {
     const user = await this.userManager.getDomain(requester);
-    const member = await this.spaceMemberManager.getMemberByUserAndSpace(
-      user,
-      spaceId,
-    );
-    const space = await this.spaceManager.getSpace(spaceId);
+    const [member, space] = await Promise.all([
+      await this.spaceMemberManager.getMemberByUserAndSpace(user, spaceId),
+      this.spaceManager.getSpace(spaceId),
+    ]);
     if (!member.getSpaceId().isEqual(space.getId()))
       throw new BadRequestException('Invalid Space');
     const posts = await this.postManager.getPosts(space);
@@ -38,17 +37,21 @@ export class PostService implements PostUsecase {
   }
 
   async getPost(requester: T_UUID, postId: T_UUID) {
-    const user = await this.userManager.getDomain(requester);
-    const post = await this.postManager.getPost(postId);
-    const author = await this.userManager.getDomain(post.getAuthorId());
-    const member = await this.spaceMemberManager.getMemberByUserAndSpace(
-      user,
-      post.getSpaceId(),
-    );
+    const [user, post] = await Promise.all([
+      this.userManager.getDomain(requester),
+      this.postManager.getPost(postId),
+    ]);
+    const [author, member] = await Promise.all([
+      this.userManager.getDomain(post.getAuthorId()),
+      this.spaceMemberManager.getMemberByUserAndSpace(user, post.getSpaceId()),
+    ]);
+    const [role, chats] = await Promise.all([
+      this.spaceRoleManager.getRole(member.getRoleId()),
+      this.chatManager.getChats(post),
+    ]);
+
     post.setAuthor(author);
-    const role = await this.spaceRoleManager.getRole(member.getRoleId());
     const memberId = new SpaceMemberID(member, role);
-    const chats = await this.chatManager.getChats(post);
     const chatResponse = chats.map((chat) => chat.exportResponseData(memberId));
     return { post: post.exportResponseData(memberId), chatList: chatResponse };
   }
@@ -71,10 +74,12 @@ export class PostService implements PostUsecase {
     );
     const role = await this.spaceRoleManager.getRole(member.getRoleId());
     const memberId = new SpaceMemberID(member, role);
+
     if (dto.type === 'notice' && !memberId.isAdmin(spaceId))
       throw new BadRequestException('Not allowed');
     if (memberId.isAdmin(spaceId) && dto.isAnonymous)
       throw new BadRequestException('admin cannot write anonymous post');
+
     const post = await this.postManager.createPost(
       user,
       dto.content,
@@ -82,6 +87,7 @@ export class PostService implements PostUsecase {
       spaceId,
       dto.isAnonymous,
     );
+    post.changeType(dto.type, memberId);
     return post.exportResponseData(memberId);
   }
 
@@ -97,8 +103,10 @@ export class PostService implements PostUsecase {
   }
 
   async deletePost(requester: T_UUID, postId: T_UUID) {
-    const user = await this.userManager.getDomain(requester);
-    const post = await this.postManager.getPost(postId);
+    const [user, post] = await Promise.all([
+      this.userManager.getDomain(requester),
+      this.postManager.getPost(postId),
+    ]);
     const member = await this.spaceMemberManager.getMemberByUserAndSpace(
       user,
       post.getSpaceId(),
@@ -118,15 +126,18 @@ export class PostService implements PostUsecase {
       isAnonymous?: boolean;
     },
   ) {
-    const user = await this.userManager.getDomain(requester);
     const postId = new T_UUID(dto.postId);
-    const post = await this.postManager.getPost(postId);
+    const [user, post] = await Promise.all([
+      this.userManager.getDomain(requester),
+      this.postManager.getPost(postId),
+    ]);
+
     const previousChatId = new T_UUID(dto.previousChatId);
-    const previousChat = await this.chatManager.getChat(previousChatId);
-    const member = await this.spaceMemberManager.getMemberByUserAndSpace(
-      user,
-      post.getSpaceId(),
-    );
+    const [previousChat, member] = await Promise.all([
+      this.chatManager.getChat(previousChatId),
+      this.spaceMemberManager.getMemberByUserAndSpace(user, post.getSpaceId()),
+    ]);
+
     const role = await this.spaceRoleManager.getRole(member.getRoleId());
     const memberID = new SpaceMemberID(member, role);
     const newChat = this.chatManager.createChat(
@@ -155,9 +166,11 @@ export class PostService implements PostUsecase {
     requester: T_UUID,
     dto: { chatId?: string; content?: string },
   ) {
-    const user = await this.userManager.getDomain(requester);
     const chatId = new T_UUID(dto.chatId);
-    const chat = await this.chatManager.getChat(chatId);
+    const [chat, user] = await Promise.all([
+      this.chatManager.getChat(chatId),
+      this.userManager.getDomain(requester),
+    ]);
 
     const member = await this.spaceMemberManager.getMemberByUserAndSpace(
       user,
@@ -171,8 +184,10 @@ export class PostService implements PostUsecase {
   }
 
   async deleteChat(requester: T_UUID, chatId: T_UUID) {
-    const user = await this.userManager.getDomain(requester);
-    const chat = await this.chatManager.getChat(chatId);
+    const [user, chat] = await Promise.all([
+      this.userManager.getDomain(requester),
+      this.chatManager.getChat(chatId),
+    ]);
     const member = await this.spaceMemberManager.getMemberByUserAndSpace(
       user,
       chat.getSpaceId(),
@@ -186,8 +201,10 @@ export class PostService implements PostUsecase {
     if (chats.filter((c) => c.getAuthorId().isEqual(user.getId())).length === 1)
       post.setTotalParticipants(post.getTotalParticipants() - 1);
     post.setTotalChats(post.getTotalChats() - 1);
-    await this.chatManager.applyChat(chat);
-    await this.postManager.updatePost(post);
+    Promise.all([
+      this.chatManager.applyChat(chat),
+      this.postManager.updatePost(post),
+    ]);
     return true;
   }
 }
