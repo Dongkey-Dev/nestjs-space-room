@@ -3,6 +3,7 @@ import { IUser, userSchema } from '../user/user.interface';
 import { Chat } from './chat';
 import { ISpaceMemberID } from '../spaceMemberID/spaceMemberID.interface';
 import { BaseDomain } from '../base/baseDomain';
+import { BadRequestException } from '@nestjs/common';
 
 class MockSpaceAdmin implements ISpaceMemberID {
   userId: T_UUID;

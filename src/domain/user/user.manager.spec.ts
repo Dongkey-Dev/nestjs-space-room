@@ -5,6 +5,7 @@ import { BaseDomain } from '../base/baseDomain';
 import { z } from 'zod';
 import { IUser, registUserSchema, userSchema } from './user.interface';
 import { User } from './user';
+import { BadRequestException } from '@nestjs/common';
 
 class MockUser implements IUser {
   id: T_UUID;

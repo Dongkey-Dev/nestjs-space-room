@@ -3,6 +3,7 @@ import { ISpaceMember } from '../spaceMember/spaceMember.interface';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 import { Space } from './space';
 import { ISpace } from './space.interface';
+import { BadRequestException } from '@nestjs/common';
 
 describe('Space', () => {
   let space: Space;

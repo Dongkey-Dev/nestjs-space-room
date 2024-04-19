@@ -67,11 +67,12 @@ export interface IPost {
   exportPostData(): z.infer<typeof postPersistenceSchema>;
   setTobeRemove(memberId: ISpaceMemberID): void;
   isTobeRemove(): boolean;
+  isAuthor(userId: T_UUID): boolean;
 
   getId(): T_UUID;
   getType(): string;
   getSpaceId(): T_UUID;
-  changeTypeNotice(spaceMember: ISpaceMemberID): boolean;
+  changeType(type: string, spaceMember: ISpaceMemberID): boolean;
 
   changeTitle(requester: T_UUID, title: string): boolean;
   changeContent(requester: T_UUID, content: string): boolean;

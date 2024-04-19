@@ -4,6 +4,7 @@ import { ISpaceRole, permissionEnum } from '../spaceRole/spaceRole.interface';
 import { z } from 'zod';
 import { SpaceMemberID } from './spaceMemberID';
 import { ISpace } from '../space/space.interface';
+import { BadRequestException } from '@nestjs/common';
 
 describe('SpaceMemberId', () => {
   let adminSpaceMemberId: SpaceMemberID;

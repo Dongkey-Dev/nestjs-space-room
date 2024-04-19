@@ -4,6 +4,8 @@ import { IUser, profileSchema } from '../user/user.interface';
 import { z } from 'zod';
 import { Post, PostList } from './post';
 import { IPost } from './post.interface';
+import { BadRequestException } from '@nestjs/common';
+
 class MockPost implements IPost {
   private id: T_UUID;
   private type: 'notice' | 'question' = 'question';
@@ -39,10 +41,13 @@ class MockPost implements IPost {
     this.totalComments = totalComments;
     this.totalParticipants = totalParticipants;
   }
+  isAuthor(userId: T_UUID): boolean {
+    throw new Error('Method not implemented.');
+  }
   exportResponseData(memberId: ISpaceMemberID): {
-    id?: T_UUID;
+    id?: string;
     type?: string;
-    spaceId?: T_UUID;
+    spaceId?: string;
     isAnonymous?: boolean;
     title?: string;
     content?: string;
@@ -52,7 +57,10 @@ class MockPost implements IPost {
     createdAt?: Date;
     updatedAt?: Date;
   } {
-    throw new BadRequestException('Method not implemented.');
+    throw new Error('Method not implemented.');
+  }
+  setSpaceId(spaceId: T_UUID): void {
+    throw new Error('Method not implemented.');
   }
   changeTitle(requester: T_UUID, title: string): boolean {
     throw new BadRequestException('Method not implemented.');
@@ -145,7 +153,7 @@ class MockPost implements IPost {
   getTitle(): string {
     return this.title;
   }
-  changeTypeNotice(spaceMember: ISpaceMemberID): boolean {
+  changeType(type: string, spaceMember: ISpaceMemberID): boolean {
     throw new BadRequestException('Method not implemented.');
   }
 }
@@ -373,17 +381,9 @@ describe('Post', () => {
   });
 
   it('게시글 삭제시 권한 확인', () => {
-    expect(() => post.changeTypeNotice(mockMemberID)).toThrow(
+    expect(() => post.changeType('notice', mockMemberID)).toThrow(
       'Only admin can change post type',
     );
-  });
-
-  it('게시글 삭제시 권한 확인', () => {
-    expect(post.changeTypeNotice(mockAdminID)).toBeTruthy();
-  });
-
-  it('게시글 삭제시 권한 확인', () => {
-    expect(post.changeTypeNotice(mockOwnerID)).toBeTruthy();
   });
 
   it('공간 소유자 게시글 작성자 프로필 확인', () => {

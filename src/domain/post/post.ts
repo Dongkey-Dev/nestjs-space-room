@@ -100,6 +100,9 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
     if (!this.id) this.id = new T_UUID();
     this.changes = new DomainChange();
   }
+  isAuthor(userId: T_UUID): boolean {
+    return this.authorId.isEqual(userId);
+  }
   setSpaceId(spaceId: T_UUID): void {
     this.spaceId = spaceId;
   }
@@ -252,12 +255,13 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
   getTitle(): string {
     return this.title;
   }
-  changeTypeNotice(spaceMember: ISpaceMemberID): boolean {
-    if (spaceMember.isAdmin(this.spaceId)) {
-      this.type = 'notice';
-      return true;
-    }
-    throw new BadRequestException('Only admin can change post type');
+  changeType(type: string, spaceMember: ISpaceMemberID): boolean {
+    if (type === this.type) return true;
+    if (type === 'notice' && !spaceMember.isAdmin(this.spaceId))
+      throw new BadRequestException(
+        'Only admin can change post type to notice',
+      );
+    if (this.isAuthor(spaceMember.getUserId())) this.type = type;
   }
   setRanking(ranking: number): boolean {
     this.ranking = ranking;

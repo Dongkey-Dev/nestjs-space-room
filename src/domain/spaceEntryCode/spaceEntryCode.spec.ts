@@ -4,6 +4,7 @@ import { ISpaceMember } from '../spaceMember/spaceMember.interface';
 import { ISpaceRole } from '../spaceRole/spaceRole.interface';
 import { SpaceEntryCode } from './spaceEntryCode';
 import { ISpaceEntryCode } from './spaceEntryCode.interface';
+import { BadRequestException } from '@nestjs/common';
 
 describe('SpaceEntryCode', () => {
   let spaceEntryCode: ISpaceEntryCode;
