@@ -15,6 +15,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     const status = exception.getStatus();
     const message = exception.getResponse();
+
+    console.error('GlobalExceptionFilter', status, message);
     response.status(status).json(message);
   }
 }

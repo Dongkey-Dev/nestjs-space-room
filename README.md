@@ -29,6 +29,7 @@ ERD
 erDiagram
     User ||--o{ UserRole : ""
     UserRole }o--|| Space : ""
+    UserRole }o--|| SpaceRole : ""
     Space ||--o{ SpaceRole : ""
     User ||--o{ Post : "author"
     Post ||--o{ Chat : "Chats"
