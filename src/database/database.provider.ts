@@ -30,7 +30,7 @@ export const mysqlProvider = {
           ? ['dist/**/entities/*.{ts,js}', 'src/entities/*.{ts,js}']
           : ['dist/**/entities/*.{ts,js}'],
       namingStrategy: new SnakeNamingStrategy(),
-      logging: true,
+      logging: false,
       synchronize: false,
       migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
     });

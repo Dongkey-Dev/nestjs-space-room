@@ -1,4 +1,6 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 let host;
 let port;
@@ -27,12 +29,12 @@ const options = {
   username: 'root',
   password: password,
   database: database,
-
   type: process.env.DATABASE_TYPE,
+
   synchronize: process.env.DATABASE_SYNCHRONIZE === 'true',
   dropSchema: false,
   keepConnectionAlive: true,
-  logging: process.env.NODE_ENV !== 'prod',
+  logging: false,
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   cli: {
@@ -53,4 +55,4 @@ const options = {
         : undefined,
   },
 } as DataSourceOptions;
-export default new DataSource(options);
+export const AppDataSource = new DataSource(options);
