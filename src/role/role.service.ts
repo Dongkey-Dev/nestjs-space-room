@@ -28,9 +28,11 @@ export class RoleService implements RoleUsecase {
     spaceId: T_UUID,
     roleId: T_UUID,
   ): Promise<boolean> {
-    const space = await this.spaceManager.getSpace(spaceId);
-    const newRole = await this.spaceRoleManager.getRole(roleId);
-    const targetUser = await this.userManager.getDomain(targetUserUuid);
+    const [space, newRole, targetUser] = await Promise.all([
+      this.spaceManager.getSpace(spaceId),
+      this.spaceRoleManager.getRole(roleId),
+      this.userManager.getDomain(targetUserUuid),
+    ]);
     const targetMember = await this.spaceMemberManager.getMemberByUserAndSpace(
       targetUser,
       spaceId,
@@ -71,8 +73,10 @@ export class RoleService implements RoleUsecase {
     spaceUuid: T_UUID,
     roleId: T_UUID,
   ): Promise<boolean> {
-    const space = await this.spaceManager.getSpace(spaceUuid);
-    const role = await this.spaceRoleManager.getRole(roleId);
+    const [space, role] = await Promise.all([
+      this.spaceManager.getSpace(spaceUuid),
+      this.spaceRoleManager.getRole(roleId),
+    ]);
     const memberList = await this.spaceMemberManager.getMembersBySpace(space);
     memberList.forEach(async (member) => {
       role.checkRemovableNoUse(member);
