@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm';
+import { DataSource, getMetadataArgsStorage } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export const mysqlProvider = {
@@ -25,10 +25,7 @@ export const mysqlProvider = {
     const dataSource = new DataSource({
       type: 'mysql',
       ...config,
-      entities:
-        process.env.RUN_FROM_MAIN == 'true'
-          ? ['dist/**/entities/*.{ts,js}', 'src/entities/*.{ts,js}']
-          : ['dist/**/entities/*.{ts,js}'],
+      entities: getMetadataArgsStorage().tables.map((tbl) => tbl.target),
       namingStrategy: new SnakeNamingStrategy(),
       logging: false,
       synchronize: false,

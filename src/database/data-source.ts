@@ -1,4 +1,4 @@
-import { DataSource, DataSourceOptions } from 'typeorm';
+import { DataSource, DataSourceOptions, getMetadataArgsStorage } from 'typeorm';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -35,7 +35,7 @@ const options = {
   dropSchema: false,
   keepConnectionAlive: true,
   logging: false,
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  entities: getMetadataArgsStorage().tables.map((tbl) => tbl.target),
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   cli: {
     entitiesDir: 'src',
