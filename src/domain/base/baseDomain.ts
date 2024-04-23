@@ -79,12 +79,7 @@ export abstract class BaseDomain<T extends ZodObject<any>> {
   }
 
   import(data: z.input<typeof this.zodSchema>): any {
-    const parseResult = this.zodSchema.safeParse(data);
-    if (!parseResult.success) {
-      return false;
-    }
     Object.assign(this, this.zodSchema.parse(data));
-    return true;
   }
 
   importPartial(data: Partial<z.input<typeof this.zodSchema>>): any {
