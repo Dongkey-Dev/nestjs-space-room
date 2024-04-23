@@ -12,11 +12,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception.stack) console.error(exception.stack);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
+    try {
+      const status = exception.getStatus();
+      const message = exception.getResponse();
 
-    const status = exception.getStatus();
-    const message = exception.getResponse();
-
-    console.error('GlobalExceptionFilter', status, message);
-    response.status(status).json(message);
+      console.error('GlobalExceptionFilter', status, message);
+      response.status(status).json(message);
+    } catch (e) {
+      console.error(e);
+      response.status(500).json({ message: 'Internal Server Error' });
+    }
   }
 }
