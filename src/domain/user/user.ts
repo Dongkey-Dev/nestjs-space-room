@@ -4,10 +4,7 @@ import { IUser, anonymousProfileSchema, userSchema } from './user.interface';
 import { DomainManager } from '../base/domainManager';
 import { z } from 'zod';
 import { ISpace } from '../space/space.interface';
-import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 export class User
@@ -30,8 +27,7 @@ export class User
     if (!this.id) this.id = new T_UUID();
   }
   async login(hashedPassword: string): Promise<boolean> {
-    if (!this.password)
-      throw new InternalServerErrorException('password not set');
+    if (!this.password) throw new BadRequestException('not found user');
     const loginResult = await bcrypt.compare(hashedPassword, this.password);
     if (!loginResult) {
       throw new BadRequestException('login failed');
