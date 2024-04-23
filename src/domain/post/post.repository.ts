@@ -14,6 +14,7 @@ export interface IPostRepository {
 
 export class PostRepository implements IPostRepository {
   constructor(@Inject('DATA_SOURCE') private readonly dataSource: DataSource) {}
+
   findPostBySpace(spaceId: T_UUID): Promise<IPostList> {
     return this.dataSource
       .getRepository(PostEntity)
@@ -61,10 +62,11 @@ export class PostRepository implements IPostRepository {
     return new Post({
       id: new T_UUID(postEntity.id),
       type: postEntity.type,
-      spaceId: postEntity.spaceId,
+      spaceId: new T_UUID(postEntity.spaceId),
       title: postEntity.title,
       content: postEntity.content,
       authorId: postEntity.authorId,
+      isAnonymous: postEntity.isAnonymous,
       createdAt: postEntity.createdAt,
       updatedAt: postEntity.updatedAt,
     });

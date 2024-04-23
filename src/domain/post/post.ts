@@ -19,7 +19,7 @@ export class PostList implements IPostList {
   total: number;
   constructor(posts: IPost[]) {
     if (
-      posts.some((post) => post.getSpaceId() !== posts[0].getSpaceId()) ||
+      posts.some((post) => !post.getSpaceId().isEqual(posts[0].getSpaceId())) ||
       posts.length === 0
     ) {
       throw new BadRequestException('All posts should have the same spaceId');
@@ -58,9 +58,9 @@ export class PostList implements IPostList {
   }
 
   exportPosts(): {
-    id?: Buffer;
+    id?: string;
     type?: string;
-    spaceId?: Buffer;
+    spaceId?: string;
     title?: string;
     totalComments?: number;
     ranking?: number;
@@ -68,9 +68,9 @@ export class PostList implements IPostList {
     const posts = this.getPosts();
     return posts.map((post) => {
       return {
-        id: post.getId().exportBuffer(),
+        id: post.getId().exportString(),
         type: post.getType(),
-        spaceId: post.getSpaceId().exportBuffer(),
+        spaceId: post.getSpaceId().exportString(),
         title: post.getTitle(),
         totalComments: post.getTotalChats(),
         ranking: post.getRanking(),
@@ -230,6 +230,7 @@ export class Post extends BaseDomain<typeof postSchema> implements IPost {
   setAuthor(author: IUser): boolean {
     if (this.author) throw new BadRequestException('Author is already set');
     this.author = author;
+    this.authorId = author.getId();
     return true;
   }
   getAuthorId(): T_UUID {

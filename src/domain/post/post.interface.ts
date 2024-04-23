@@ -105,11 +105,11 @@ export const exportPostsSchema = z
   .object({
     id: z
       .custom<IUUIDTransable>()
-      .transform((val) => new T_UUID(val).exportBuffer()),
+      .transform((val) => new T_UUID(val).exportString()),
     type: z.string(),
     spaceId: z
       .custom<IUUIDTransable>()
-      .transform((val) => new T_UUID(val).exportBuffer()),
+      .transform((val) => new T_UUID(val).exportString()),
     title: z.string(),
     totalComments: z.number().default(0),
     ranking: z.number().default(0),
