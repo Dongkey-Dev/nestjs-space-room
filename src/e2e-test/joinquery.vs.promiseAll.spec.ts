@@ -23,7 +23,7 @@ class JoinRepo {
     return res;
   }
 
-  async get100Users(count: number) {
+  async getUsers(count: number) {
     const userEntityList = await this.dataSource
       .getRepository(UserRoleEntity)
       .find({ take: count });
@@ -181,13 +181,13 @@ describe('test', () => {
   });
 
   it('should get 100 users', async () => {
-    const users = await joinRepo.get100Users(100);
+    const users = await joinRepo.getUsers(100);
     expect(users.length).toBe(100);
   });
 
   it('START TEST JOIN REPO', async () => {
     const count = 1;
-    const userIdList = await joinRepo.get100Users(count);
+    const userIdList = await joinRepo.getUsers(count);
     console.time('joinRepo.start');
     const res = await joinRepo.start(userIdList);
     console.timeEnd('joinRepo.start');
@@ -195,7 +195,7 @@ describe('test', () => {
   }, 100000); // Increase the timeout value to 10000ms
 
   it('START TEST PROMISE ALL REPO', async () => {
-    const count = 10000;
+    const count = 1;
     const users = await promiseAllRepo.get100Users(count);
     console.time('promiseAllRepo.start');
     const res = await promiseAllRepo.start(users);
