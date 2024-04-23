@@ -57,8 +57,10 @@ export class UserService implements UserUsecase {
     if (user.isValid()) return user;
   }
   async createUser(dto: z.infer<typeof createUserDtoSchema>) {
-    const user = await this.userManager.createDomain();
-    const salt = await bcrypt.genSalt();
+    const [user, salt] = await Promise.all([
+      this.userManager.createDomain(),
+      bcrypt.genSalt(),
+    ]);
     const hashedPassword = await bcrypt.hash(dto.password, salt);
     user.keepPassword(hashedPassword);
     user.setProfile(dto);

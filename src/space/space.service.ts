@@ -13,10 +13,7 @@ import { ISpaceRole } from 'src/domain/spaceRole/spaceRole.interface';
 import { ISpaceEntryCodeManager } from 'src/domain/spaceEntryCode/spaceEntryCode.manager.interface';
 import { IUserManager } from 'src/domain/user/user.manager.interface';
 import { ISpaceMember } from 'src/domain/spaceMember/spaceMember.interface';
-import {
-  ISpaceEntryCode,
-  exportSpaceEntryCodeSchema,
-} from 'src/domain/spaceEntryCode/spaceEntryCode.interface';
+
 @Injectable()
 export class SpaceService implements SpaceUsecase {
   constructor(
@@ -99,8 +96,11 @@ export class SpaceService implements SpaceUsecase {
     const memberList = await this.spaceMemberManager.getMembersByUser(user);
     const response = [];
     for (const member of memberList) {
-      const space = await this.spaceManager.getSpace(member.getSpaceId());
-      const role = await this.spaceRoleManager.getRole(member.getRoleId());
+      const [space, role] = await Promise.all([
+        this.spaceManager.getSpace(member.getSpaceId()),
+        this.spaceRoleManager.getRole(member.getRoleId()),
+      ]);
+
       response.push({
         spaceId: space.getId().exportString(),
         spaceName: space.getName(),
