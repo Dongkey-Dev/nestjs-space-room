@@ -38,6 +38,10 @@ Nestjs Express TypeOrm zod
 5. yarn start:dev 혹은 yarn start:prod
 6. src/space-room.postman_collection.json를 import하여 사용
 
+## 테스트
+
+1. yarn test
+
 ---
 
 ### TODO

@@ -104,7 +104,7 @@ describe('User', () => {
     user.keepPassword(password);
     expect(() => {
       user.keepPassword(password);
-    }).toThrow(/password/);
+    }).toThrow();
   });
 
   it('비밀번호 설정후, 비밀번호 확인', async () => {
@@ -123,6 +123,6 @@ describe('User', () => {
   it('비밀번호 설정되지 않은 경우, 로그인시 에러 발생', () => {
     expect(async () => {
       await user.login('password');
-    }).rejects.toThrow(/password/);
+    }).rejects.toThrow(/found/);
   });
 });

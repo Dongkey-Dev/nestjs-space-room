@@ -1,4 +1,4 @@
-import { DataSource, DataSourceOptions, getMetadataArgsStorage } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -6,7 +6,7 @@ let host;
 let port;
 let password;
 let database;
-
+console.log(process.env);
 if (process.env.NODE_ENV === 'prod') {
   host = process.env.PROD_DATABASE_HOST;
   port = process.env.PROD_DATABASE_PORT
@@ -29,13 +29,13 @@ const options = {
   username: 'root',
   password: password,
   database: database,
-  type: process.env.DATABASE_TYPE,
 
+  type: process.env.DATABASE_TYPE,
   synchronize: process.env.DATABASE_SYNCHRONIZE === 'true',
   dropSchema: false,
   keepConnectionAlive: true,
-  logging: false,
-  entities: getMetadataArgsStorage().tables.map((tbl) => tbl.target),
+  logging: process.env.NODE_ENV !== 'prod',
+  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   cli: {
     entitiesDir: 'src',

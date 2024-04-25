@@ -270,7 +270,7 @@ class MockUser implements IUser {
     throw new BadRequestException('Method not implemented.');
   }
   getId(): T_UUID {
-    throw new BadRequestException('Method not implemented.');
+    return this.id;
   }
   updateProfile(profile: {
     lastName?: string;

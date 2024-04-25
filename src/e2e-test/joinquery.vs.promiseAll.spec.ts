@@ -1,5 +1,4 @@
 import { DataSource } from 'typeorm';
-import { AppDataSource } from '../database/data-source';
 import { Space } from '../domain/space/space';
 import { SpaceRole } from '../domain/spaceRole/spaceRole';
 import { User } from '../domain/user/user';
@@ -8,6 +7,7 @@ import { UserEntity } from '../database/entities/user.entity';
 import { T_UUID } from '../util/uuid';
 import { SpaceEntity } from '../database/entities/space.entity';
 import { SpaceRoleEntity } from '../database/entities/spaceRole.entity';
+import { AppDataSource } from 'src/database/data-source';
 
 class JoinRepo {
   dataSource: DataSource;
