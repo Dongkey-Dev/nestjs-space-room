@@ -1,0 +1,706 @@
+{
+	"info": {
+		"_postman_id": "02c676a8-ca22-49bc-acd4-f101f336fd15",
+		"name": "space-room",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13494085"
+	},
+	"item": [
+		{
+			"name": "유저 및 인증",
+			"item": [
+				{
+					"name": "내정보 조회",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjUxM2ZjMmU0Y2ZmNDQyYTA4MGY2YmU3MDAxY2FhMWNmIiwiaWF0IjoxNzEyNzU4MzIwLCJleHAiOjE3MTI3NjE5MjB9.P5-8cnyMWxZZa-uU_Yz73HttSSuQhzRJ941bQ0hpqoQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/user/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "계정 생성",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"email\": \"test2@email.com\",\n\"firstName\": \"test\",\n\"lastName\": \"test\",\n\"password\": \"test\",\n\"profileImage\":\"http://test.png\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "로그인",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"email\": \"admin@email.com\",\n\"password\": \"adminpassword\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/user/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "공간",
+			"item": [
+				{
+					"name": "공간 생성",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM1NDRlMDFjODRkYzQ0ZDFhYThhNjk5ZjU1OWFhMDE4IiwiaWF0IjoxNzEzMTIyNzQ5LCJleHAiOjE3MTMxMjYzNDl9.vuBiiL1UT8izTuwf046tpLCVet-8aAlLSXq9_ZCgPS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"name\": \"교실\",\n\"logo\": \"교실.png\",\n\"roleList\": [{\"name\": \"조교\", \"permission\":\"admin\"}, {\"name\": \"학생\", \"permission\": \"member\"}]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/space",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"space"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "공간 참여",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ1Nzc5YTI3MzJlZTQwNDdhOGZiMTIxMTNlOTZlN2ZiIiwiaWF0IjoxNzEzMTIwNDQ3LCJleHAiOjE3MTMxMjQwNDd9.dO9CYBa7lgGvUe3E5X3Jo8pYUZ-VhjvOArqUxk_ycIo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"inviteCode\": \"xrBZzlQv\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/space/join",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"space",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "참여중인 공간 조회",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE0MWY1ZTdjOTEwZTRlYTliMmI3MzdlMjZmYjZkYTAyIiwiaWF0IjoxNzEzMzUzOTk2LCJleHAiOjE3MTMzNTc1OTZ9.JMy7UEnMIF60MZ3dft0j9HbQku8UHlN4nbeKbq-46as",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/space/join",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"space",
+								"join"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "공간 역할 및 권한",
+			"item": [
+				{
+					"name": "역할 생성",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ1Nzc5YTI3MzJlZTQwNDdhOGZiMTIxMTNlOTZlN2ZiIiwiaWF0IjoxNzEzMTIwNDQ3LCJleHAiOjE3MTMxMjQwNDd9.dO9CYBa7lgGvUe3E5X3Jo8pYUZ-VhjvOArqUxk_ycIo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"spaceId\": \"5c47cd5833034f7d95e842b85c8c4ee3\",\n\"roleList\": [{\"name\": \"학부모\", \"permission\":\"member\"},{\"name\": \"게스트\", \"permission\":\"member\"}]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "특정 유저 역할 변경",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ1Nzc5YTI3MzJlZTQwNDdhOGZiMTIxMTNlOTZlN2ZiIiwiaWF0IjoxNzEzMTIwNDQ3LCJleHAiOjE3MTMxMjQwNDd9.dO9CYBa7lgGvUe3E5X3Jo8pYUZ-VhjvOArqUxk_ycIo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"targetUserUuid\": \"userUuid\",\n\"spaceId\": \"spaceId\",\n\"roleId\": \"roleId\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/user/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "특정 역할 삭제",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ1Nzc5YTI3MzJlZTQwNDdhOGZiMTIxMTNlOTZlN2ZiIiwiaWF0IjoxNzEzMTIxNjE4LCJleHAiOjE3MTMxMjUyMTh9.hVytJODYAyzevwHXzDm5fYnTX0IYQpACD04E2Pmtd4M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/role?spaceId=spaceId&roleId=roleId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"role"
+							],
+							"query": [
+								{
+									"key": "spaceId",
+									"value": "spaceId"
+								},
+								{
+									"key": "roleId",
+									"value": "roleId"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "게시글 및 댓글",
+			"item": [
+				{
+					"name": "\b게시글 생성",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM1NDRlMDFjODRkYzQ0ZDFhYThhNjk5ZjU1OWFhMDE4IiwiaWF0IjoxNzEzMTIyNzQ5LCJleHAiOjE3MTMxMjYzNDl9.vuBiiL1UT8izTuwf046tpLCVet-8aAlLSXq9_ZCgPS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"spaceId\": \"a027584dbde144328d0de9ab865444a7\",\n\"title\": \"test\",\n\"content\": \"test\",\n\"isAnonymous\": false,\n\"type\":\"notice\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/post",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"post"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "익명 \b게시글 생성",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM1NDRlMDFjODRkYzQ0ZDFhYThhNjk5ZjU1OWFhMDE4IiwiaWF0IjoxNzEzMTIyNzQ5LCJleHAiOjE3MTMxMjYzNDl9.vuBiiL1UT8izTuwf046tpLCVet-8aAlLSXq9_ZCgPS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"spaceId\": \"a027584dbde144328d0de9ab865444a7\",\n\"title\": \"test\",\n\"content\": \"test\",\n\"isAnonymous\": true,\n\"type\":\"notice\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/post",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"post"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "게시글 댓글과 함께 조회",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM1NDRlMDFjODRkYzQ0ZDFhYThhNjk5ZjU1OWFhMDE4IiwiaWF0IjoxNzEzMTIyNzQ5LCJleHAiOjE3MTMxMjYzNDl9.vuBiiL1UT8izTuwf046tpLCVet-8aAlLSXq9_ZCgPS8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/post?postId=48c30b7ef50f49ac985d9561c8d35191",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"post"
+							],
+							"query": [
+								{
+									"key": "postId",
+									"value": "48c30b7ef50f49ac985d9561c8d35191"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "공간에 대한 게시글 모두 조회",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/post/all?spaceId=spaceId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"post",
+								"all"
+							],
+							"query": [
+								{
+									"key": "spaceId",
+									"value": "spaceId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "게시글 삭제",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/post?postId=postId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"post"
+							],
+							"query": [
+								{
+									"key": "postId",
+									"value": "postId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "게시글 업데이트",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"title\": \"updatedTitle\",\n\"content\": \"updatedContent\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/post",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"post"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "댓글 생성",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"postid\": \"postId\",\n\"content\": \"content\",\n\"isAnonymous\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/post/chat",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"post",
+								"chat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "익명 댓글 생성",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"postid\": \"postId\",\n\"content\": \"content\",\n\"isAnonymous\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/post/chat",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"post",
+								"chat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "댓글 수정",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chatId\": \"chatId\",\n  \"content\": \"updatedContent\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/post/chat",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"post",
+								"chat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "댓글 삭제",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/post/chat?chatId=chatId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"post",
+								"chat"
+							],
+							"query": [
+								{
+									"key": "chatId",
+									"value": "chatId"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
