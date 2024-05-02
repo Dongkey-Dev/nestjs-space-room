@@ -31,11 +31,16 @@ Nestjs Express TypeOrm zod
 
 ## 실행 순서
 
+1. yarn start:auto
+2. src/space-room.postman_collection.json를 import하여 사용
+
+혹은,
+
 1. yarn install
 2. docker-compose up -d
 3. yarn migration:dev:generate src/database/migrations/dev/First
 4. yarn migration:dev:run
-5. yarn start:dev 혹은 yarn start:prod
+5. yarn start:dev
 6. src/space-room.postman_collection.json를 import하여 사용
 
 ## 테스트

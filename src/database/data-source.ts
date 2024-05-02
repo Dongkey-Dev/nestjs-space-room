@@ -6,7 +6,7 @@ let host;
 let port;
 let password;
 let database;
-console.log(process.env);
+
 if (process.env.NODE_ENV === 'prod') {
   host = process.env.PROD_DATABASE_HOST;
   port = process.env.PROD_DATABASE_PORT

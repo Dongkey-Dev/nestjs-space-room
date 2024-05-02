@@ -13,6 +13,8 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "cross-env NODE_ENV=prod node dist/main",
     "typeorm": "env-cmd ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "start:auto": "./cmd/start-auto.sh",
+    "remove:auto": "docker-compose down && rm -rf ./node_modules && rm -rf ./dist && rm -rf ./localdb/* && rm -rf ./src/database/migrations/dev/",
     "migration:dev:generate": "cross-env NODE_ENV=dev yarn typeorm --dataSource=src/database/data-source.ts migration:generate",
     "migration:prod:generate": "cross-env NODE_ENV=prod yarn typeorm --dataSource=src/database/data-source.ts migration:generate",
     "migration:create": "yarn typeorm migration:create",
