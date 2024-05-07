@@ -32,7 +32,7 @@ Nestjs Express TypeOrm zod
 ## 실행 순서
 
 1. yarn start:auto
-2. src/space-room.postman_collection.json를 import하여 사용
+2. postman을 이용하여 src/space-room.postman_collection.json를 import하여 사용
 
 혹은,
 
@@ -41,7 +41,7 @@ Nestjs Express TypeOrm zod
 3. yarn migration:dev:generate src/database/migrations/dev/First
 4. yarn migration:dev:run
 5. yarn start:dev
-6. src/space-room.postman_collection.json를 import하여 사용
+6. postman을 이용하여 src/space-room.postman_collection.json를 import하여 사용
 
 ## 테스트
 
